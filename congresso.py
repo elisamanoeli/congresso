@@ -4,16 +4,12 @@ import os
 
 # Funções para carregar e salvar dados no arquivo CSV
 def carregar_dados():
-    # Verifica se o arquivo existe
     if os.path.exists("inscritos.csv"):
-        # Se o arquivo existir, tenta carregar o CSV
         try:
             return pd.read_csv("inscritos.csv")
         except pd.errors.EmptyDataError:
-            # Se o arquivo existir mas estiver vazio, retorna um DataFrame vazio com as colunas definidas
             return pd.DataFrame(columns=["Nome Completo", "Email", "Telefone", "Categoria", "Data de Inscrição"])
     else:
-        # Se o arquivo não existir, retorna um DataFrame vazio com as colunas definidas
         return pd.DataFrame(columns=["Nome Completo", "Email", "Telefone", "Categoria", "Data de Inscrição"])
 
 def salvar_inscricao(nome, email, telefone, categoria):
@@ -27,6 +23,12 @@ def salvar_inscricao(nome, email, telefone, categoria):
     })
     df_inscritos = pd.concat([df_inscritos, nova_inscricao], ignore_index=True)
     df_inscritos.to_csv("inscritos.csv", index=False)
+
+# Interface Streamlit
+if st.button("Baixar dados em CSV"):
+    df_inscritos = carregar_dados()
+    csv = df_inscritos.to_csv(index=False)
+    st.download_button(label="Baixar CSV", data=csv, file_name="inscritos.csv", mime="text/csv")
 
 # CSS personalizado para layout
 st.markdown(
