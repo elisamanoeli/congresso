@@ -4,9 +4,17 @@ import os
 
 # Funções para carregar e salvar dados no arquivo CSV
 def carregar_dados():
+    # Verifica se o arquivo existe
     if os.path.exists("inscritos.csv"):
-        return pd.read_csv("inscritos.csv")
-    return pd.DataFrame(columns=["Nome Completo", "Email", "Telefone", "Categoria", "Data de Inscrição"])
+        # Se o arquivo existir, tenta carregar o CSV
+        try:
+            return pd.read_csv("inscritos.csv")
+        except pd.errors.EmptyDataError:
+            # Se o arquivo existir mas estiver vazio, retorna um DataFrame vazio com as colunas definidas
+            return pd.DataFrame(columns=["Nome Completo", "Email", "Telefone", "Categoria", "Data de Inscrição"])
+    else:
+        # Se o arquivo não existir, retorna um DataFrame vazio com as colunas definidas
+        return pd.DataFrame(columns=["Nome Completo", "Email", "Telefone", "Categoria", "Data de Inscrição"])
 
 def salvar_inscricao(nome, email, telefone, categoria):
     df_inscritos = carregar_dados()
