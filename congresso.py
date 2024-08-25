@@ -11,14 +11,23 @@ df_associados = pd.read_excel(url_excel)
 
 # Função para consultar o status do associado na planilha Excel
 def consultar_status_associado(nome_completo, status_selecionado):
-    # Filtrar pelo nome completo na coluna correspondente e verificar o status
-    associado = df_associados[(df_associados['Nome Completo'] == nome_completo) &
-                              (df_associados['status'] == status_selecionado)]
+    # Normalizar o nome removendo espaços extras e padronizando para minúsculas
+    nome_completo = nome_completo.strip().lower()
     
+    # Normalizar os nomes na planilha também
+    df_associados['Nome Completo'] = df_associados['Nome Completo'].str.strip().str.lower()
+
+    # Filtrar pelo nome completo e status na coluna correspondente
+    associado = df_associados[
+        (df_associados['Nome Completo'] == nome_completo) & 
+        (df_associados['status'].str.lower() == status_selecionado.lower())
+    ]
+    
+    # Verifica se o associado foi encontrado com o status correto
     if not associado.empty:
-        return True  # O nome e o status correspondem
+        return True
     else:
-        return False  # Não corresponde
+        return False
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
