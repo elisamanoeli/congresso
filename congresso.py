@@ -10,21 +10,14 @@ if uploaded_file is not None:
     # Carregar o Excel em um DataFrame do pandas
     df_associados = pd.read_excel(uploaded_file)
 
-    # Exibir as colunas do DataFrame para garantir que a leitura foi correta
-    st.write("Colunas do arquivo:", df_associados.columns)
-
     # Função para consultar o status do associado na planilha Excel
     def consultar_status_associado(nome_completo):
-        # Verificar se a coluna "Nome Completo" existe
-        if 'Nome Completo' in df_associados.columns:
-            associado = df_associados[df_associados['Nome Completo'] == nome_completo]
-            
-            if not associado.empty:
-                return associado['Status'].values[0]  # Substitua 'Status' pelo nome correto da coluna do status
-            else:
-                return None
+        # Filtrar pelo nome completo na coluna correspondente
+        associado = df_associados[df_associados['Nome Completo'] == nome_completo]
+        
+        if not associado.empty:
+            return associado['Status'].values[0]  # Substitua 'Status' pelo nome correto da coluna do status
         else:
-            st.error("A coluna 'Nome Completo' não foi encontrada no arquivo.")
             return None
 
 # Carregar as credenciais do Streamlit Secrets
@@ -42,25 +35,6 @@ worksheet = sheet.get_worksheet(0)
 def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
     worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 
-# Exibe o formulário se o arquivo Excel foi carregado
-if uploaded_file is not None:
-    nome_completo = st.text_input("Nome Completo")
-    email = st.text_input("Email")
-    telefone = st.text_input("Telefone")
-
-    if st.button("ENVIAR"):
-        # Certifique-se de que as variáveis estejam preenchidas
-        if nome_completo and email and telefone:
-            status_associado = consultar_status_associado(nome_completo)
-            
-            if status_associado:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_associado)
-                st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
-            else:
-                st.error("Não encontramos seu nome na lista de associados.")
-        else:
-            st.error("Por favor, preencha todos os campos.")
-
 # CSS personalizado para layout
 st.markdown(
     """
@@ -77,6 +51,34 @@ st.markdown(
         justify-content: center;
         align-items: center;
         flex-direction: column;
+    }
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .clear-session-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+    .stButton>button {
+        background-color: #0B0C45;
+        color: white;
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: 2px solid #0B0C45;
+    }
+    .stButton>button:hover {
+        background-color: #28a745;
+        color: white;
+    }
+    .stButton>button:focus, .stButton>button:focus-visible, .stButton>button:focus-visible:active {
+        outline: none !important;
+        border: 2px solid #0B0C45 !important;
+        box-shadow: none !important;
     }
     </style>
     """,
@@ -136,7 +138,7 @@ if st.session_state["opcao_escolhida"] == "associado":
     col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
-if st.session_state["botao_clicado"] and uploaded_file is not None:
+if st.session_state["botao_clicado"]:
     st.subheader("Preencha o Formulário de Inscrição")
     
     # Defina as variáveis a partir dos campos do formulário
@@ -147,14 +149,67 @@ if st.session_state["botao_clicado"] and uploaded_file is not None:
     if st.button("ENVIAR"):
         # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
-            status_associado = consultar_status_associado(nome_completo)
-            if status_associado:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_associado)
-                st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
+            if uploaded_file is not None:
+                status_associado = consultar_status_associado(nome_completo)
+                
+                if status_associado:
+                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_associado)
+                    st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
+                else:
+                    st.error("Não encontramos seu nome na lista de associados.")
             else:
-                st.error("Não encontramos seu nome na lista de associados.")
+                st.error("Por favor, faça o upload do arquivo de status dos associados.")
         else:
             st.error("Por favor, preencha todos os campos.")
+
+    # Exibir a mensagem de sucesso conforme o botão clicado
+    if st.session_state["formulario_preenchido"]:
+        if st.session_state["botao_clicado"] == "adimplente":
+            st.markdown("""
+                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                    <div style="text-align:center; color:#0B0C45;">
+                        <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
+                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                        <p>30 DE NOVEMBRO 7:30</p>
+                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                        <p>Churrasco de Confraternização</p>
+                        <p>30 DE NOVEMBRO 13:30</p>
+                        <p>Local do churrasco a definir, Curitiba/PR</p>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+        elif st.session_state["botao_clicado"] == "em_negociacao":
+            st.markdown("""
+                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                    <div style="text-align:center; color:#0B0C45;">
+                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
+                                                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                        <p>30 DE NOVEMBRO 7:30</p>
+                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                        <p>Churrasco de Confraternização</p>
+                        <p>30 DE NOVEMBRO 13:30</p>
+                        <p>Local do churrasco a definir, Curitiba/PR</p>
+                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                        <p><strong>VALOR: R$ 00,00</strong></p>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+        elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+            st.markdown("""
+                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                    <div style="text-align:center; color:#0B0C45;">
+                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                        <p>30 DE NOVEMBRO 7:30</p>
+                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                        <p>Churrasco de Confraternização</p>
+                        <p>30 DE NOVEMBRO 13:30</p>
+                        <p>Local do churrasco a definir, Curitiba/PR</p>
+                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                        <p><strong>VALOR: R$ 00,00</strong></p>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state["opcao_escolhida"] == "nao_associado":
@@ -179,7 +234,7 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
                     <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
                     <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                     <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR
+                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                     <p>Churrasco de Confraternização</p>
                     <p>30 DE NOVEMBRO 13:30</p>
                     <p>Local do churrasco a definir, Curitiba/PR</p>
