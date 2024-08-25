@@ -20,9 +20,6 @@ if uploaded_file is not None:
         else:
             return None
 
-    # Continue com o restante do código que depende do arquivo Excel
-
-
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"],
@@ -37,18 +34,6 @@ worksheet = sheet.get_worksheet(0)
 # Função para enviar dados para o Google Sheets
 def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
     worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
-
-if st.button("ENVIAR"):
-    if nome_completo and email and telefone:
-        status_associado = consultar_status_associado(nome_completo)
-        
-        if status_associado:
-            salvar_inscricao_google_sheets(nome_completo, email, telefone, status_associado)
-            st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
-        else:
-            st.error("Não encontramos seu nome na lista de associados.")
-    else:
-        st.error("Por favor, preencha todos os campos.")
 
 # CSS personalizado para layout
 st.markdown(
@@ -164,8 +149,16 @@ if st.session_state["botao_clicado"]:
     if st.button("ENVIAR"):
         # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
-            salvar_inscricao_google_sheets(nome_completo, email, telefone, st.session_state["botao_clicado"])
-            st.session_state["formulario_preenchido"] = True
+            if uploaded_file is not None:
+                status_associado = consultar_status_associado(nome_completo)
+                
+                if status_associado:
+                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_associado)
+                    st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
+                else:
+                    st.error("Não encontramos seu nome na lista de associados.")
+            else:
+                st.error("Por favor, faça o upload do arquivo de status dos associados.")
         else:
             st.error("Por favor, preencha todos os campos.")
 
@@ -190,7 +183,7 @@ if st.session_state["botao_clicado"]:
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
                         <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                                                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
@@ -258,3 +251,4 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         st.session_state.clear()
         st.experimental_rerun()
     st.markdown("</div>", unsafe_allow_html=True)
+
