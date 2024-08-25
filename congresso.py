@@ -1,12 +1,23 @@
 import streamlit as st
+from google.oauth2 import service_account
 import gspread
-from google.oauth2.service_account import Credentials
+
+# Carregar as credenciais do secrets
+creds = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"],
+    scopes=["https://www.googleapis.com/auth/spreadsheets"]
+)
+
+# Acessar o Google Sheets
+client = gspread.authorize(creds)
+
+# Abra a planilha usando a URL ou o ID
+sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/19wMRW8wEyiSme8WjgawoBZnzVX7GQxXu/edit#gid=2139537031')
+
+# Agora você pode interagir com a planilha
 
 # Defina o escopo correto para acessar o Google Sheets
 scope = ['https://www.googleapis.com/auth/spreadsheets']
-
-# Carregar as credenciais da conta de serviço
-creds = Credentials.from_service_account_file('superb-ship-278216-513ce4b8e90f.json', scopes=scope)
 
 # Autenticar cliente
 client = gspread.authorize(creds)
