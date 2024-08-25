@@ -3,21 +3,25 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
-# URL do arquivo XLSX no GitHub (substitua pela URL correta)
-url_excel = "https://raw.githubusercontent.com/usuario/repo/main/ASIIP_PGTOS_2024_STATUS.xlsx"
+# Permitir o upload manual do arquivo Excel
+uploaded_file = st.file_uploader("Escolha o arquivo de status dos associados", type=["xlsx"])
 
-# Carregar o arquivo Excel em um DataFrame do pandas
-df_associados = pd.read_excel(url_excel)
+if uploaded_file is not None:
+    # Carregar o Excel em um DataFrame do pandas
+    df_associados = pd.read_excel(uploaded_file)
 
-# Função para consultar o status do associado na planilha Excel
-def consultar_status_associado(nome_completo):
-    # Filtrar pelo nome completo na coluna correspondente
-    associado = df_associados[df_associados['Nome Completo'] == nome_completo]
-    
-    if not associado.empty:
-        return associado['Status'].values[0]  # Substitua 'Status' pelo nome correto da coluna do status
-    else:
-        return None
+    # Função para consultar o status do associado na planilha Excel
+    def consultar_status_associado(nome_completo):
+        # Filtrar pelo nome completo na coluna correspondente
+        associado = df_associados[df_associados['Nome Completo'] == nome_completo]
+        
+        if not associado.empty:
+            return associado['Status'].values[0]  # Substitua 'Status' pelo nome correto da coluna do status
+        else:
+            return None
+
+    # Continue com o restante do código que depende do arquivo Excel
+
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
