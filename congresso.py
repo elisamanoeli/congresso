@@ -156,11 +156,13 @@ if st.session_state["opcao_escolhida"] == "associado":
 if st.session_state["botao_clicado"]:
     st.subheader("Preencha o Formulário de Inscrição")
     
+    # Defina as variáveis a partir dos campos do formulário
     nome_completo = st.text_input("Nome Completo")
     email = st.text_input("Email")
     telefone = st.text_input("Telefone")
 
     if st.button("ENVIAR"):
+        # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
             salvar_inscricao_google_sheets(nome_completo, email, telefone, st.session_state["botao_clicado"])
             st.session_state["formulario_preenchido"] = True
