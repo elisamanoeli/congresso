@@ -249,13 +249,16 @@ if "formulario_preenchido" not in st.session_state:
 if "formulario_preenchido_nao_associado" not in st.session_state:
     st.session_state["formulario_preenchido_nao_associado"] = False
 
-# Botão para limpar sessão
+# Botão para limpar sessão (nova abordagem sem st.experimental_rerun)
 if st.button("Limpar Sessão"):
     # Resetar todas as variáveis de estado
+    st.session_state.clear()
     st.session_state["opcao_escolhida"] = None
     st.session_state["botao_clicado"] = None
     st.session_state["formulario_preenchido"] = False
     st.session_state["formulario_preenchido_nao_associado"] = False
     
-    # Limpar os campos de texto e reiniciar a interface
-    st.experimental_rerun()
+    # Mostra uma mensagem de confirmação
+    st.success("Sessão limpa com sucesso!")
+
+# Continue o código normalmente...
