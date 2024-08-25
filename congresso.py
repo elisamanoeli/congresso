@@ -237,31 +237,10 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
             </div>
         """, unsafe_allow_html=True)
 
-import streamlit as st
-
-# Inicializar variáveis de estado
-if "opcao_escolhida" not in st.session_state:
-    st.session_state["opcao_escolhida"] = None
-if "botao_clicado" not in st.session_state:
-    st.session_state["botao_clicado"] = None
-if "nome_completo" not in st.session_state:
-    st.session_state["nome_completo"] = ""
-if "email" not in st.session_state:
-    st.session_state["email"] = ""
-if "telefone" not in st.session_state:
-    st.session_state["telefone"] = ""
-
-# Botão para limpar os campos do formulário
-if st.button("Limpar Sessão"):
-    # Limpar os valores dos campos
-    st.session_state["nome_completo"] = ""
-    st.session_state["email"] = ""
-    st.session_state["telefone"] = ""
-    st.success("Sessão limpa com sucesso!")
-
-# Exibe o formulário
-st.text_input("Nome Completo", key="nome_completo")
-st.text_input("Email", key="email")
-st.text_input("Telefone", key="telefone")
-
-# Continue com o restante do código...
+# Botão para limpar sessão (centralizado)
+if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
+    st.markdown("<div class='clear-session-container'>", unsafe_allow_html=True)
+    if st.button("Limpar Sessão"):
+        st.session_state.clear()
+        st.experimental_rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
