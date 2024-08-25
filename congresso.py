@@ -141,7 +141,7 @@ if st.session_state["opcao_escolhida"] == "associado":
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
     col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento.")
-    col3.caption("Caso queira negociar as parcelas atrasadas, receberá 50% de desconto no evento.")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e ai receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique nesse botão.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
 if st.session_state["botao_clicado"]:
