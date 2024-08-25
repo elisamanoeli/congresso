@@ -7,26 +7,6 @@ import gspread
 url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
 df_associados = pd.read_excel(url_excel)
 
-# CSS personalizado para ocultar a barra superior do Streamlit
-st.markdown(
-    """
-    <style>
-    /* Remove the top header */
-    header {visibility: hidden;}
-    
-    /* Remove the padding of the main block */
-    .block-container {
-        padding-top: 0rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Carregar o arquivo Excel do GitHub
-url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
-df_associados = pd.read_excel(url_excel)
-
 # Função para consultar o status do associado na planilha Excel
 def consultar_status_associado(nome_completo, status_selecionado):
     nome_completo = nome_completo.strip().lower()
@@ -44,7 +24,6 @@ def email_valido(email):
     return "@" in email and "." in email
 
 def telefone_valido(telefone):
-    # Verifica se o telefone contém apenas números e se possui 11 dígitos
     return telefone.isdigit() and len(telefone) == 11
 
 # Carregar as credenciais do Streamlit Secrets
@@ -62,35 +41,22 @@ worksheet = sheet.get_worksheet(0)
 def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
     worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 
-# CSS personalizado para layout
+# CSS personalizado para layout com suporte a modo claro e escuro
 st.markdown(
     """
     <style>
+    /* Estilo padrão (modo claro) */
     .stApp {
         background-color: #f0f2f6;
+        color: black;
     }
+
     .block-container {
         background-color: white;
-        padding: 20px;
         border-radius: 10px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
     }
-    .button-container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
-    }
-    .clear-session-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 30px;
-        margin-bottom: 30px;
-    }
+
     .stButton>button {
         background-color: #0B0C45;
         color: white;
@@ -98,14 +64,34 @@ st.markdown(
         padding: 10px 20px;
         border: 2px solid #0B0C45;
     }
+
     .stButton>button:hover {
         background-color: #28a745;
         color: white;
     }
-    .stButton>button:focus, .stButton>button:focus-visible, .stButton>button:focus-visible:active {
-        outline: none !important;
-        border: 2px solid #0B0C45 !important;
-        box-shadow: none !important.
+
+    /* Ajustes para Modo Escuro */
+    @media (prefers-color-scheme: dark) {
+        .stApp {
+            background-color: #1e1e1e;
+            color: white;
+        }
+
+        .block-container {
+            background-color: #333333;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .stButton>button {
+            background-color: #0B0C45;
+            color: white;
+            border: 2px solid #0B0C45;
+        }
+
+        .stButton>button:hover {
+            background-color: #28a745;
+            color: white;
+        }
     }
     </style>
     """,
@@ -124,7 +110,7 @@ if "formulario_preenchido_nao_associado" not in st.session_state:
 
 # Exibe o layout dos botões centrados
 st.image("logo.png", width=200)
-st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP Comparação Facial Humana</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
 
 st.write("Escolha uma opção para prosseguir com a inscrição:")
 
@@ -162,7 +148,7 @@ if st.session_state["opcao_escolhida"] == "associado":
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
     col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento.")
-    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e ai receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique nesse botão.")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
 if st.session_state["botao_clicado"]:
@@ -181,7 +167,7 @@ if st.session_state["botao_clicado"]:
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
-                st.error("Por favor, insira um telefone válido (apenas números e 11 dígitos).")
+                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números).")
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                 st.session_state["formulario_preenchido"] = True
@@ -198,7 +184,7 @@ if st.session_state["botao_clicado"]:
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
-                                                <p>30 DE NOVEMBRO 13:30</p>
+                        <p>30 DE NOVEMBRO 13:30</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -207,7 +193,7 @@ if st.session_state["botao_clicado"]:
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
                         <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
@@ -248,7 +234,7 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
             if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
-                st.error("Por favor, insira um telefone válido (apenas números e 11 dígitos).")
+                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números).")
             else:
                 salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
                 st.session_state["formulario_preenchido_nao_associado"] = True
