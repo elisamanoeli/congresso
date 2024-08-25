@@ -24,12 +24,6 @@ def salvar_inscricao(nome, email, telefone, categoria):
     df_inscritos = pd.concat([df_inscritos, nova_inscricao], ignore_index=True)
     df_inscritos.to_csv("inscritos.csv", index=False)
 
-# Interface Streamlit
-if st.button("Baixar dados em CSV"):
-    df_inscritos = carregar_dados()
-    csv = df_inscritos.to_csv(index=False)
-    st.download_button(label="Baixar CSV", data=csv, file_name="inscritos.csv", mime="text/csv")
-
 # CSS personalizado para layout
 st.markdown(
     """
@@ -153,7 +147,7 @@ if st.session_state["botao_clicado"]:
                         <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                                                <p>Churrasco de Confraternização</p>
+                        <p>Churrasco de Confraternização</p>
                         <p>30 DE NOVEMBRO 13:30</p>
                         <p>Local do churrasco a definir, Curitiba/PR</p>
                         <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
@@ -201,4 +195,4 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         st.session_state.clear()
         st.experimental_rerun()
     st.markdown("</div>", unsafe_allow_html=True)
-
+                       
