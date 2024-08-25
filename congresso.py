@@ -11,26 +11,8 @@ creds = service_account.Credentials.from_service_account_info(
 
 # Acessar o Google Sheets pelo ID da planilha
 client = gspread.authorize(creds)
-
-# Usando o ID da planilha em vez do URL completo
 sheet = client.open_by_key("1UauLe5ti6lQVaZED5bPatnXTYUx5PgwicdLO6fs1BzY")
-
-# Continue com as operações na planilha
-
-# Defina o escopo correto para acessar o Google Sheets
-scope = ['https://www.googleapis.com/auth/spreadsheets']
-
-# Autenticar cliente
-client = gspread.authorize(creds)
-
-# Acesse a planilha pelo URL
-sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1UauLe5ti6lQVaZED5bPatnXTYUx5PgwicdLO6fs1BzY/edit?gid=0#gid=0')
-
-# Acesse uma aba da planilha
 worksheet = sheet.get_worksheet(0)
-
-
-# Seleciona a primeira aba da planilha
 
 # Função para enviar dados para o Google Sheets
 def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
@@ -40,12 +22,9 @@ def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
 st.markdown(
     """
     <style>
-    /* Fundo cinza para toda a aplicação */
     .stApp {
         background-color: #f0f2f6;
     }
-
-    /* Estilo para as áreas de texto com fundo branco */
     .block-container {
         background-color: white;
         padding: 20px;
@@ -56,24 +35,18 @@ st.markdown(
         align-items: center;
         flex-direction: column;
     }
-
-    /* Centralizar os botões em uma linha */
     .button-container {
         display: flex;
         justify-content: center;
         gap: 20px;
         margin-top: 20px;
     }
-
-    /* Centralizar o botão "Limpar Sessão" */
     .clear-session-container {
         display: flex;
         justify-content: center;
         margin-top: 30px;
         margin-bottom: 30px;
     }
-
-    /* Estilização dos botões */
     .stButton>button {
         background-color: #0B0C45;
         color: white;
@@ -81,12 +54,10 @@ st.markdown(
         padding: 10px 20px;
         border: 2px solid #0B0C45;
     }
-
     .stButton>button:hover {
         background-color: #28a745;
         color: white;
     }
-
     .stButton>button:focus, .stButton>button:focus-visible, .stButton>button:focus-visible:active {
         outline: none !important;
         border: 2px solid #0B0C45 !important;
@@ -160,7 +131,6 @@ if st.session_state["botao_clicado"]:
     if st.button("ENVIAR"):
         if nome_completo and email and telefone:
             salvar_inscricao_google_sheets(nome_completo, email, telefone, st.session_state["botao_clicado"])
-            salvar_inscricao_local(nome_completo, email, telefone, st.session_state["botao_clicado"])
             st.session_state["formulario_preenchido"] = True
         else:
             st.error("Por favor, preencha todos os campos.")
@@ -183,7 +153,7 @@ if st.session_state["botao_clicado"]:
             """, unsafe_allow_html=True)
         elif st.session_state["botao_clicado"] == "em_negociacao":
             st.markdown("""
-                                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
                         <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
                         <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
@@ -224,9 +194,8 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
 
     if st.button("ENVIAR (NÃO ASSOCIADO)"):
         if nome_completo_na and email_na and telefone_na:
-            # Salvar a inscrição no Google Sheets e localmente
+            # Salvar a inscrição no Google Sheets
             salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
-            salvar_inscricao_local(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
             st.session_state["formulario_preenchido_nao_associado"] = True
         else:
             st.error("Por favor, preencha todos os campos.")
@@ -255,4 +224,3 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         st.session_state.clear()
         st.experimental_rerun()
     st.markdown("</div>", unsafe_allow_html=True)
-
