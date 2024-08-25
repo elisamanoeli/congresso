@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 import gspread
 
 # URL do arquivo Excel no GitHub ou em um local acessível publicamente
-url_excel = "https://raw.githubusercontent.com/usuario/repo/main/ASIIP_PGTOS_2024_STATUS.xlsx"
+url_excel = "https://raw.githubusercontent.com/usuario/repo/main/caminho/para/ASIIP_PGTOS_2024_STATUS.xlsx"
 
 # Carregar o arquivo Excel em um DataFrame do pandas
 df_associados = pd.read_excel(url_excel)
