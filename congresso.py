@@ -245,14 +245,13 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
 if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     st.markdown("<div class='clear-session-container'>", unsafe_allow_html=True)
     
+    # Se o botão "Limpar Sessão" for clicado
     if st.button("Limpar Sessão"):
         # Limpar todos os estados da sessão
-        st.session_state.clear()
+        for key in st.session_state.keys():
+            del st.session_state[key]
         
-        # Mostrar uma mensagem de sucesso ao limpar a sessão
-        st.success("Sessão limpa com sucesso!")
-        
-        # Recarregar a página após limpar a sessão para reiniciar o app
+        # Recarregar a página para resetar a aplicação
         st.experimental_rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
