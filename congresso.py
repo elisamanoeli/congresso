@@ -244,21 +244,24 @@ if "opcao_escolhida" not in st.session_state:
     st.session_state["opcao_escolhida"] = None
 if "botao_clicado" not in st.session_state:
     st.session_state["botao_clicado"] = None
-if "formulario_preenchido" not in st.session_state:
-    st.session_state["formulario_preenchido"] = False
-if "formulario_preenchido_nao_associado" not in st.session_state:
-    st.session_state["formulario_preenchido_nao_associado"] = False
+if "nome_completo" not in st.session_state:
+    st.session_state["nome_completo"] = ""
+if "email" not in st.session_state:
+    st.session_state["email"] = ""
+if "telefone" not in st.session_state:
+    st.session_state["telefone"] = ""
 
-# Botão para limpar sessão (nova abordagem sem st.experimental_rerun)
+# Botão para limpar os campos do formulário
 if st.button("Limpar Sessão"):
-    # Resetar todas as variáveis de estado
-    st.session_state.clear()
-    st.session_state["opcao_escolhida"] = None
-    st.session_state["botao_clicado"] = None
-    st.session_state["formulario_preenchido"] = False
-    st.session_state["formulario_preenchido_nao_associado"] = False
-    
-    # Mostra uma mensagem de confirmação
+    # Limpar os valores dos campos
+    st.session_state["nome_completo"] = ""
+    st.session_state["email"] = ""
+    st.session_state["telefone"] = ""
     st.success("Sessão limpa com sucesso!")
 
-# Continue o código normalmente...
+# Exibe o formulário
+st.text_input("Nome Completo", key="nome_completo")
+st.text_input("Email", key="email")
+st.text_input("Telefone", key="telefone")
+
+# Continue com o restante do código...
