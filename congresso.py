@@ -3,10 +3,8 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
-# URL da planilha no GitHub
+# Carregar a planilha de status dos associados diretamente do GitHub
 url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
-
-# Carregar a planilha
 df_associados = pd.read_excel(url_excel)
 
 # Função para consultar o status do associado na planilha
@@ -16,22 +14,6 @@ def consultar_status_associado(nome_completo, status_selecionado):
         (df_associados['status'] == status_selecionado)
     ]
     return not associado.empty
-
-# Função para exibir a mensagem de sucesso formatada
-def exibir_mensagem_sucesso(nome_completo, status_selecionado):
-    st.markdown(f"""
-        <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-            <div style="text-align:center; color:#0B0C45;">
-                <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                <p>30 DE NOVEMBRO 7:30</p>
-                <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                <p>Churrasco de Confraternização</p>
-                <p>30 DE NOVEMBRO 13:30</p>
-                <p>Local do churrasco a definir, Curitiba/PR</p>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -158,16 +140,27 @@ if st.session_state["botao_clicado"]:
     nome_completo = st.text_input("Nome Completo")
     email = st.text_input("Email")
     telefone = st.text_input("Telefone")
+    status_selecionado = st.session_state["botao_clicado"]
 
     if st.button("ENVIAR"):
         # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
-            status_selecionado = st.session_state["botao_clicado"]
-
             if consultar_status_associado(nome_completo, status_selecionado):
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                 st.session_state["formulario_preenchido"] = True
-                exibir_mensagem_sucesso(nome_completo, status_selecionado)
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                            <p>Local do churrasco a definir, Curitiba/PR</p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
             else:
                 st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
         else:
@@ -184,8 +177,10 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
     if st.button("ENVIAR (NÃO ASSOCIADO)"):
         if nome_completo_na and email_na and telefone_na:
             # Salvar a inscrição no Google Sheets
-                        salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
+            salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
             st.session_state["formulario_preenchido_nao_associado"] = True
+            st.markdown("""
+                <div class="
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
@@ -209,4 +204,3 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         st.session_state.clear()
         st.experimental_rerun()
     st.markdown("</div>", unsafe_allow_html=True)
-
