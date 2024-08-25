@@ -24,7 +24,8 @@ def email_valido(email):
     return "@" in email and "." in email
 
 def telefone_valido(telefone):
-    return telefone.isdigit()
+    # Verifica se o telefone contém apenas números e se possui 11 dígitos
+    return telefone.isdigit() and len(telefone) == 11
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -84,7 +85,7 @@ st.markdown(
     .stButton>button:focus, .stButton>button:focus-visible, .stButton>button:focus-visible:active {
         outline: none !important;
         border: 2px solid #0B0C45 !important;
-        box-shadow: none !important;
+        box-shadow: none !important.
     }
     </style>
     """,
@@ -141,7 +142,7 @@ if st.session_state["opcao_escolhida"] == "associado":
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
     col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento.")
-    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e ai receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique nesse botão.")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e ai receberá 50% de desconto no valor do evento.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
 if st.session_state["botao_clicado"]:
@@ -160,7 +161,7 @@ if st.session_state["botao_clicado"]:
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
-                st.error("Por favor, insira um telefone válido (apenas números).")
+                st.error("Por favor, insira um telefone válido (apenas números e 11 dígitos).")
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                 st.session_state["formulario_preenchido"] = True
@@ -177,7 +178,7 @@ if st.session_state["botao_clicado"]:
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
+                                                <p>30 DE NOVEMBRO 13:30</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -185,7 +186,7 @@ if st.session_state["botao_clicado"]:
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%
+                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
                         <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
@@ -227,7 +228,7 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
             if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
-                st.error("Por favor, insira um telefone válido (apenas números).")
+                st.error("Por favor, insira um telefone válido (apenas números e 11 dígitos).")
             else:
                 salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
                 st.session_state["formulario_preenchido_nao_associado"] = True
@@ -263,3 +264,4 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         st.session_state["formulario_preenchido_nao_associado"] = False
 
     st.markdown("</div>", unsafe_allow_html=True)
+
