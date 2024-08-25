@@ -36,29 +36,6 @@ worksheet = sheet.get_worksheet(0)
 def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
     worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 
-# Função para carregar dados do CSV (caso seja usado)
-def carregar_dados():
-    if os.path.exists("inscritos.csv"):
-        try:
-            return pd.read_csv("inscritos.csv")
-        except pd.errors.EmptyDataError:
-            return pd.DataFrame(columns=["Nome Completo", "Email", "Telefone", "Categoria", "Data de Inscrição"])
-    else:
-        return pd.DataFrame(columns=["Nome Completo", "Email", "Telefone", "Categoria", "Data de Inscrição"])
-
-# Função para salvar a inscrição no CSV local (backup)
-def salvar_inscricao_local(nome, email, telefone, categoria):
-    df_inscritos = carregar_dados()
-    nova_inscricao = pd.DataFrame({
-        "Nome Completo": [nome],
-        "Email": [email],
-        "Telefone": [telefone],
-        "Categoria": [categoria],
-        "Data de Inscrição": [pd.Timestamp.now()]
-    })
-    df_inscritos = pd.concat([df_inscritos, nova_inscricao], ignore_index=True)
-    df_inscritos.to_csv("inscritos.csv", index=False)
-
 # CSS personalizado para layout
 st.markdown(
     """
