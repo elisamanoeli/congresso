@@ -247,10 +247,8 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     
     # Se o botão "Limpar Sessão" for clicado
     if st.button("Limpar Sessão"):
-        # Limpar todos os estados da sessão
-        for key in st.session_state.keys():
-            del st.session_state[key]
-        
+        # Usando uma maneira segura para limpar a sessão e recarregar
+        st.session_state.clear()  # Limpa todo o session_state
         # Recarregar a página para resetar a aplicação
         st.experimental_rerun()
     
