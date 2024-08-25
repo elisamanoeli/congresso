@@ -32,6 +32,9 @@ st.markdown(
 
     /* Ocultar o botão do Streamlit no canto inferior direito */
     footer {visibility: hidden;}
+    .viewerBadge_link__1S137 {
+        display: none !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
