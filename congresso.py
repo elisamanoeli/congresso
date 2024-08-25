@@ -3,6 +3,42 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
+# CSS personalizado para ocultar a barra superior do Streamlit, remover o padding superior e ocultar o botão do Streamlit
+st.markdown(
+    """
+    <style>
+    /* Remove the top header */
+    header {visibility: hidden;}
+    
+    /* Remove the padding of the main block */
+    .block-container {
+        padding-top: 0rem;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .block-container {
+            background-color: #0e1117;
+            color: white;
+        }
+        .stButton>button {
+            background-color: #4b5563;
+            color: white;
+        }
+        .stButton>button:hover {
+            background-color: #6b7280;
+        }
+    }
+
+    /* Ocultar o botão do Streamlit no canto inferior direito */
+    footer {visibility: hidden;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# O restante do seu código permanece o mesmo...
+
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
