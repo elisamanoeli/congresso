@@ -11,14 +11,14 @@ df_associados = pd.read_excel(url_excel)
 
 # Função para consultar o status do associado na planilha Excel
 def consultar_status_associado(nome_completo, status_selecionado):
-    associado = df_associados[
-        (df_associados['Nome Completo'] == nome_completo) &
-        (df_associados['Status'] == status_selecionado)
-    ]
+    # Filtrar pelo nome completo na coluna correspondente e verificar o status
+    associado = df_associados[(df_associados['Nome Completo'] == nome_completo) &
+                              (df_associados['status'] == status_selecionado)]
+    
     if not associado.empty:
-        return True
+        return True  # O nome e o status correspondem
     else:
-        return False
+        return False  # Não corresponde
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -145,16 +145,17 @@ if st.session_state["botao_clicado"]:
     nome_completo = st.text_input("Nome Completo")
     email = st.text_input("Email")
     telefone = st.text_input("Telefone")
-    status_selecionado = st.session_state["botao_clicado"]
 
     if st.button("ENVIAR"):
         # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
+            status_selecionado = st.session_state["botao_clicado"]
+            
             if consultar_status_associado(nome_completo, status_selecionado):
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                 st.success(f"Inscrição realizada com sucesso! Status: {status_selecionado}")
             else:
-                st.error(f"O nome '{nome_completo}' não corresponde ao status '{status_selecionado}'. Verifique ou entre em contato conosco.")
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
         else:
             st.error("Por favor, preencha todos os campos.")
 
@@ -178,8 +179,8 @@ if st.session_state["botao_clicado"]:
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
-                                                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                                                <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
+                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
