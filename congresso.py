@@ -1,4 +1,9 @@
-# CSS personalizado para ocultar a barra superior do Streamlit
+import pandas as pd
+import streamlit as st
+from google.oauth2 import service_account
+import gspread
+
+# CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
     <style>
@@ -9,15 +14,25 @@ st.markdown(
     .block-container {
         padding-top: 0rem;
     }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .block-container {
+            background-color: #0e1117;
+            color: white;
+        }
+        .stButton>button {
+            background-color: #4b5563;
+            color: white;
+        }
+        .stButton>button:hover {
+            background-color: #6b7280;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
-import pandas as pd
-import streamlit as st
-from google.oauth2 import service_account
-import gspread
 
 # Carregar o arquivo Excel do GitHub
 url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
@@ -98,11 +113,6 @@ st.markdown(
         background-color: #28a745;
         color: white;
     }
-    .stButton>button:focus, .stButton>button:focus-visible, .stButton>button:focus-visible:active {
-        outline: none !important;
-        border: 2px solid #0B0C45 !important;
-        box-shadow: none !important;
-    }
     </style>
     """,
     unsafe_allow_html=True
@@ -127,6 +137,24 @@ st.write("Escolha uma opção para prosseguir com a inscrição:")
 # Criando um contêiner para centralizar os botões
 st.markdown("<div class='button-container'>", unsafe_allow_html=True)
 col1, col2 = st.columns([1, 1])
+
+# Botões centralizados
+with col1:
+    if st.button("ASSOCIADO"):
+        st.session_state["opcao_escolhida"] = "associado"
+        st.session_state["botao_clicado"] = None
+        st.session_state["formulario_preenchido"] = False
+
+with col2:
+    if st.button("NÃO ASSOCIADO"):
+        st.session_state["opcao_escolhida"] = "nao_associado"
+        st.session_state["botao_clicado"] = None
+        st.session_state["formulario_preenchido_nao_associado"] = False
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# O restante da aplicação continua igual
+
 
 # Botões centralizados
 with col1:
