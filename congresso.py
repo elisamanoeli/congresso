@@ -1,3 +1,12 @@
+import pandas as pd
+import streamlit as st
+from google.oauth2 import service_account
+import gspread
+
+# Carregar o arquivo Excel do GitHub
+url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
+df_associados = pd.read_excel(url_excel)
+
 # CSS personalizado para ocultar a barra superior do Streamlit
 st.markdown(
     """
@@ -13,11 +22,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-import pandas as pd
-import streamlit as st
-from google.oauth2 import service_account
-import gspread
 
 # Carregar o arquivo Excel do GitHub
 url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
