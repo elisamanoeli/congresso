@@ -1,17 +1,24 @@
 import streamlit as st
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import pandas as pd
-import os
+from google.oauth2.service_account import Credentials
 
-# Configurar a autenticação para acessar o Google Sheets
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+# Defina o escopo correto para acessar o Google Sheets
+scope = ['https://www.googleapis.com/auth/spreadsheets']
+
+# Carregar as credenciais da conta de serviço
+creds = Credentials.from_service_account_file('superb-ship-278216-513ce4b8e90f.json', scopes=scope)
+
+# Autenticar cliente
 client = gspread.authorize(creds)
 
-# Acesse a planilha pelo URL (substitua o URL pela sua planilha correta)
-sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/19wMRW8wEyiSme8WjgawoBZnzVX7GQxXu/edit#gid=2139537031')
-worksheet = sheet.get_worksheet(0)  # Seleciona a primeira aba da planilha
+# Acesse a planilha pelo URL
+sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1UauLe5ti6lQVaZED5bPatnXTYUx5PgwicdLO6fs1BzY/edit?gid=0#gid=0')
+
+# Acesse uma aba da planilha
+worksheet = sheet.get_worksheet(0)
+
+
+# Seleciona a primeira aba da planilha
 
 # Função para enviar dados para o Google Sheets
 def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
