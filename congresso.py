@@ -1,3 +1,4 @@
+import re  # Adicionando a biblioteca regex
 import pandas as pd
 import streamlit as st
 from google.oauth2 import service_account
@@ -260,3 +261,33 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         st.session_state["telefone"] = ""
 
     st.markdown("</div>", unsafe_allow_html=True)
+
+# Exibe o formulário de inscrição para ASSOCIADO
+if st.session_state["botao_clicado"]:
+    st.subheader("Preencha o Formulário de Inscrição")
+    
+    nome_completo = st.text_input("Nome Completo")
+    email = st.text_input("Email")
+    telefone = st.text_input("Telefone")
+
+    def email_valido(email):
+        # Usando expressão regular para validar email
+        pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        return re.match(pattern, email)
+
+    if st.button("ENVIAR"):
+        if nome_completo and email and telefone:
+            if not email_valido(email):
+                st.error("Por favor, insira um email válido.")
+            else:
+                status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
+
+                if consultar_status_associado(nome_completo, status_selecionado):
+                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+                    st.session_state["formulario_preenchido"] = True
+                else:
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+        else:
+            st.error("Por favor, preencha todos os campos.")
+
+    # Exibir mensagem de sucesso (o restante do código)
