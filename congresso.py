@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 import streamlit as st
 from google.oauth2 import service_account
@@ -23,8 +24,15 @@ def consultar_status_associado(nome_completo, status_selecionado):
 def email_valido(email):
     return "@" in email and "." in email
 
-def telefone_valido(telefone):
-    return telefone.isdigit()
+# Função para validar o telefone (permitindo apenas números)
+def validar_telefone(telefone):
+    # Remover todos os espaços e caracteres não numéricos
+    telefone = telefone.strip()
+    # Verificar se o telefone contém apenas números e tem pelo menos 10 dígitos (com DDD)
+    if re.fullmatch(r'\d{10,11}', telefone):
+        return True
+    else:
+        return False
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
