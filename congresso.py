@@ -3,22 +3,21 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
-# Permitir o upload manual do arquivo Excel
-uploaded_file = st.file_uploader("Escolha o arquivo de status dos associados", type=["xlsx"])
+# URL do arquivo Excel no GitHub ou em um local acessível publicamente
+url_excel = "https://raw.githubusercontent.com/usuario/repo/main/ASIIP_PGTOS_2024_STATUS.xlsx"
 
-if uploaded_file is not None:
-    # Carregar o Excel em um DataFrame do pandas
-    df_associados = pd.read_excel(uploaded_file)
+# Carregar o arquivo Excel em um DataFrame do pandas
+df_associados = pd.read_excel(url_excel)
 
-    # Função para consultar o status do associado na planilha Excel
-    def consultar_status_associado(nome_completo):
-        # Filtrar pelo nome completo na coluna correspondente
-        associado = df_associados[df_associados['Nome Completo'] == nome_completo]
-        
-        if not associado.empty:
-            return associado['Status'].values[0]  # Substitua 'Status' pelo nome correto da coluna do status
-        else:
-            return None
+# Função para consultar o status do associado na planilha Excel
+def consultar_status_associado(nome_completo):
+    # Filtrar pelo nome completo na coluna correspondente
+    associado = df_associados[df_associados['Nome Completo'] == nome_completo]
+    
+    if not associado.empty:
+        return associado['Status'].values[0]  # Substitua 'Status' pelo nome correto da coluna do status
+    else:
+        return None
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -149,16 +148,13 @@ if st.session_state["botao_clicado"]:
     if st.button("ENVIAR"):
         # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
-            if uploaded_file is not None:
-                status_associado = consultar_status_associado(nome_completo)
-                
-                if status_associado:
-                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_associado)
-                    st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
-                else:
-                    st.error("Não encontramos seu nome na lista de associados.")
+            status_associado = consultar_status_associado(nome_completo)
+            
+            if status_associado:
+                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_associado)
+                st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
             else:
-                st.error("Por favor, faça o upload do arquivo de status dos associados.")
+                st.error("Não encontramos seu nome na lista de associados.")
         else:
             st.error("Por favor, preencha todos os campos.")
 
@@ -182,8 +178,8 @@ if st.session_state["botao_clicado"]:
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
-                                                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                                                <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
+                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
