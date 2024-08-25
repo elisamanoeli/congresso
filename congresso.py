@@ -30,8 +30,6 @@ def consultar_status_associado(nome_completo, status_selecionado):
     else:
         return False
 
-import re
-
 # Função para validar o número de telefone
 def telefone_valido(telefone):
     # Verifica se o telefone contém apenas números
