@@ -3,20 +3,25 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
-# URL do arquivo Excel no GitHub (substitua pelo caminho correto)
+# URL do arquivo Excel no GitHub
 url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
+
+# Carregar o arquivo Excel em um DataFrame do pandas
 df_associados = pd.read_excel(url_excel)
 
 # Função para consultar o status do associado na planilha Excel
-def consultar_status_associado(nome_completo):
-    # Filtrar pelo nome completo na coluna correspondente
-    associado = df_associados[df_associados['Nome Completo'] == nome_completo]
+def consultar_status_associado(nome_completo, status_selecionado):
+    # Filtrar pelo nome completo e status selecionado
+    associado = df_associados[
+        (df_associados['Nome Completo'] == nome_completo) & 
+        (df_associados['Status'] == status_selecionado)
+    ]
     
+    # Se o associado for encontrado com o status selecionado
     if not associado.empty:
-        status = associado['Status'].values[0]  # Substitua 'Status' pelo nome correto da coluna do status
-        return status
+        return True
     else:
-        return None
+        return False
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -139,27 +144,20 @@ if st.session_state["opcao_escolhida"] == "associado":
 if st.session_state["botao_clicado"]:
     st.subheader("Preencha o Formulário de Inscrição")
     
+    # Defina as variáveis a partir dos campos do formulário
     nome_completo = st.text_input("Nome Completo")
     email = st.text_input("Email")
     telefone = st.text_input("Telefone")
 
     if st.button("ENVIAR"):
+        # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
-            if st.session_state["botao_clicado"] == "adimplente":
-                status_associado = consultar_status_associado(nome_completo)
-                
-                if status_associado:
-                    if status_associado.lower() == "adimplente":
-                        salvar_inscricao_google_sheets(nome_completo, email, telefone, "Adimplente")
-                        st.success(f"Inscrição realizada com sucesso! Status: {status_associado}")
-                    else:
-                        st.error(f"O associado '{nome_completo}' foi encontrado, mas não está adimplente.")
-                else:
-                    st.error(f"O nome '{nome_completo}' não foi encontrado na lista de associados.")
+            status_selecionado = st.session_state["botao_clicado"]
+            if consultar_status_associado(nome_completo, status_selecionado):
+                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+                st.success(f"Inscrição realizada com sucesso! Status: {status_selecionado}")
             else:
-                # Salvar outros tipos de inscrição (em negociação, mensalidade atrasada)
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, st.session_state["botao_clicado"])
-                st.success(f"Inscrição realizada com sucesso! Situação: {st.session_state['botao_clicado'].replace('_', ' ').title()}")
+                st.error(f"O nome '{nome_completo}' não corresponde a um associado com status '{status_selecionado}'.")
         else:
             st.error("Por favor, preencha todos os campos.")
 
@@ -181,8 +179,8 @@ if st.session_state["botao_clicado"]:
             """, unsafe_allow_html=True)
         elif st.session_state["botao_clicado"] == "em_negociacao":
             st.markdown("""
-                                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
+                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                                        <div style="text-align:center; color:#0B0C45;">
                         <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
                         <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
