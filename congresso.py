@@ -240,7 +240,15 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
 # Botão para limpar sessão (centralizado)
 if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     st.markdown("<div class='clear-session-container'>", unsafe_allow_html=True)
+    
+    # Se o botão "Limpar Sessão" for clicado
     if st.button("Limpar Sessão"):
-        st.session_state.clear()
-        st.experimental_rerun()
+        # Mantém a opção escolhida, mas limpa os campos do formulário
+        st.session_state["botao_clicado"] = None
+        st.session_state["formulario_preenchido"] = False
+        st.session_state["formulario_preenchido_nao_associado"] = False
+        st.session_state["nome_completo"] = ""
+        st.session_state["email"] = ""
+        st.session_state["telefone"] = ""
+
     st.markdown("</div>", unsafe_allow_html=True)
