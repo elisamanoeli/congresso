@@ -9,29 +9,23 @@ df_associados = pd.read_excel(url_excel)
 
 # Função para consultar o status do associado na planilha Excel
 def consultar_status_associado(nome_completo, status_selecionado):
-    # Normalizar o nome removendo espaços extras e padronizando para minúsculas
     nome_completo = nome_completo.strip().lower()
-    
-    # Normalizar os nomes na planilha também
     df_associados['Nome Completo'] = df_associados['Nome Completo'].str.strip().str.lower()
 
-    # Filtrar pelo nome completo e status na coluna correspondente
     associado = df_associados[
         (df_associados['Nome Completo'] == nome_completo) & 
         (df_associados['status'].str.lower() == status_selecionado.lower())
     ]
-    
-    # Verifica se o associado foi encontrado com o status correto
     if not associado.empty:
         return True
     else:
         return False
 
-# Função para validar o email
+# Função para verificar email válido
 def email_valido(email):
-    return "@" in email
+    return "@" in email and "." in email
 
-# Função para validar o telefone (apenas números)
+# Função para verificar telefone válido
 def telefone_valido(telefone):
     return telefone.isdigit()
 
@@ -156,30 +150,27 @@ if st.session_state["opcao_escolhida"] == "associado":
 if st.session_state["botao_clicado"]:
     st.subheader("Preencha o Formulário de Inscrição")
     
-    nome_completo = st.text_input("Nome Completo", key="nome_completo_associado")
-    email = st.text_input("Email", key="email_associado")
-    telefone = st.text_input("Telefone", key="telefone_associado")
+    nome_completo = st.text_input("Nome Completo")
+    email = st.text_input("Email")
+    telefone = st.text_input("Telefone")
 
-if st.button("ENVIAR"):
-    if nome_completo and email and telefone:
-        status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
+    if st.button("ENVIAR"):
+        if nome_completo and email and telefone:
+            status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
 
-        # Primeiro, verifique o status do associado
-        if not consultar_status_associado(nome_completo, status_selecionado):
-            st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
-        
-        # Se o status for válido, verifique o email e o telefone
-        elif not email_valido(email):
-            st.error("Por favor, insira um email válido.")
-        
-        elif not telefone_valido(telefone):
-            st.error("Por favor, insira um telefone válido (apenas números).")
-        
+            # Primeiro, verifique o status do associado
+            if not consultar_status_associado(nome_completo, status_selecionado):
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+            # Se o status for válido, verifique o email e o telefone
+            elif not email_valido(email):
+                st.error("Por favor, insira um email válido.")
+            elif not telefone_valido(telefone):
+                st.error("Por favor, insira um telefone válido (apenas números).")
+            else:
+                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+                st.session_state["formulario_preenchido"] = True
         else:
-            salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
-            st.session_state["formulario_preenchido"] = True
-    else:
-        st.error("Por favor, preencha todos os campos.")
+            st.error("Por favor, preencha todos os campos.")
 
     if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
@@ -192,96 +183,8 @@ if st.button("ENVIAR"):
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
                         <p>30 DE NOVEMBRO 13:30</p>
-                                                <p>Local do churrasco a definir, Curitiba/PR</p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        elif st.session_state["botao_clicado"] == "em_negociacao":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
                         <p>Local do churrasco a definir, Curitiba/PR</p>
-                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                        <p><strong>VALOR: R$ 00,00</strong></p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-        elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
-                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                        <p><strong>VALOR: R$ 00,00</strong></p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-
-# Exibe o formulário de inscrição para NÃO ASSOCIADO
-if st.session_state["opcao_escolhida"] == "nao_associado":
-    st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
-    
-    nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="nome_completo_na")
-    email_na = st.text_input("Email (NÃO Associado)", key="email_na")
-    telefone_na = st.text_input("Telefone (NÃO Associado)", key="telefone_na")
-
-    if st.button("ENVIAR (NÃO ASSOCIADO)"):
-        if nome_completo_na and email_na and telefone_na:
-            if not email_valido(email_na):
-                st.error("Por favor, insira um email válido.")
-            elif not telefone_valido(telefone_na):
-                st.error("Por favor, insira um telefone válido (apenas números).")
-            else:
-                salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
-                st.session_state["formulario_preenchido_nao_associado"] = True
-        else:
-            st.error("Por favor, preencha todos os campos.")
-
-    if st.session_state["formulario_preenchido_nao_associado"]:
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                    <p>Local do churrasco a definir, Curitiba/PR</p>
-                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                    <p><strong>VALOR: R$ 00,00</strong></p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-# Botão para limpar sessão (centralizado)
-if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
-    st.markdown("<div class='clear-session-container'>", unsafe_allow_html=True)
-    
-    # Se o botão "Limpar Sessão" for clicado
-    if st.button("Limpar Sessão"):
-        # Mantém a opção escolhida, mas limpa os campos do formulário
-        st.session_state["botao_clicado"] = None
-        st.session_state["formulario_preenchido"] = False
-        st.session_state["formulario_preenchido_nao_associado"] = False
-        st.session_state["nome_completo_associado"] = ""
-        st.session_state["email_associado"] = ""
-        st.session_state["telefone_associado"] = ""
-        st.session_state["nome_completo_na"] = ""
-        st.session_state["email_na"] = ""
-        st.session_state["telefone_na"] = ""
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
+        elif st.session_state["
