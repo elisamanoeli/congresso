@@ -10,24 +10,74 @@ url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%20
 df_associados = pd.read_excel(url_excel)
 
 # Função para consultar o status do associado na planilha Excel
-def consultar_status_associado(nome_completo, status_selecionado):
-    # Normalizar o nome removendo espaços extras e padronizando para minúsculas
-    nome_completo = nome_completo.strip().lower()
-    
-    # Normalizar os nomes na planilha também
-    df_associados['Nome Completo'] = df_associados['Nome Completo'].str.strip().str.lower()
-
-    # Filtrar pelo nome completo e status na coluna correspondente
+def consultar_status_associado(nome_completo, status):
     associado = df_associados[
-        (df_associados['Nome Completo'] == nome_completo) & 
-        (df_associados['status'].str.lower() == status_selecionado.lower())
+        (df_associados['Nome Completo'] == nome_completo) &
+        (df_associados['status'].str.lower() == status)
     ]
     
-    # Verifica se o associado foi encontrado com o status correto
     if not associado.empty:
         return True
     else:
         return False
+
+# Função para exibir a mensagem de sucesso formatada
+def exibir_mensagem_sucesso(nome_completo, status):
+    if status == "adimplente":
+        mensagem = f"""
+        <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+            <div style="text-align:center; color:#0B0C45;">
+                <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
+                <p><strong>Nome:</strong> {nome_completo}</p>
+                <p><strong>Status:</strong> {status}</p>
+                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                <p>30 DE NOVEMBRO 7:30</p>
+                <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                <p>Churrasco de Confraternização</p>
+                <p>30 DE NOVEMBRO 13:30</p>
+                <p>Local do churrasco a definir, Curitiba/PR</p>
+            </div>
+        </div>
+        """
+    elif status == "em_negociacao":
+        mensagem = f"""
+        <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+            <div style="text-align:center; color:#0B0C45;">
+                <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
+                <p><strong>Nome:</strong> {nome_completo}</p>
+                <p><strong>Status:</strong> {status}</p>
+                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                <p>30 DE NOVEMBRO 7:30</p>
+                <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                <p>Churrasco de Confraternização</p>
+                <p>30 DE NOVEMBRO 13:30</p>
+                <p>Local do churrasco a definir, Curitiba/PR</p>
+                <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                <p><strong>VALOR: R$ 00,00</strong></p>
+            </div>
+        </div>
+        """
+    elif status == "mensalidade_atrasada":
+        mensagem = f"""
+        <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+            <div style="text-align:center; color:#0B0C45;">
+                <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                <p><strong>Nome:</strong> {nome_completo}</p>
+                <p><strong>Status:</strong> {status}</p>
+                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                <p>30 DE NOVEMBRO 7:30</p>
+                <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                <p>Churrasco de Confraternização</p>
+                <p>30 DE NOVEMBRO 13:30</p>
+                <p>Local do churrasco a definir, Curitiba/PR</p>
+                <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                <p><strong>VALOR: R$ 00,00</strong></p>
+            </div>
+        </div>
+        """
+    
+    # Exibe a mensagem formatada
+    st.markdown(mensagem, unsafe_allow_html=True)
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -125,7 +175,7 @@ with col2:
     if st.button("NÃO ASSOCIADO"):
         st.session_state["opcao_escolhida"] = "nao_associado"
         st.session_state["botao_clicado"] = None
-        st.session_state["formulario_preenchido_nao_associado"] = False
+                st.session_state["formulario_preenchido_nao_associado"] = False
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -144,7 +194,7 @@ if st.session_state["opcao_escolhida"] == "associado":
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo: palestra e churrasco de confraternização.")
     col2.caption("Gratos pela negociação dos pagamentos, perito papiloscopista. Nesse evento, você terá 50% de desconto no valor da palestra e do churrasco.")
-    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
 if st.session_state["botao_clicado"]:
@@ -154,68 +204,19 @@ if st.session_state["botao_clicado"]:
     nome_completo = st.text_input("Nome Completo")
     email = st.text_input("Email")
     telefone = st.text_input("Telefone")
+    status_selecionado = st.session_state["botao_clicado"]
 
     if st.button("ENVIAR"):
         # Certifique-se de que as variáveis estejam preenchidas
         if nome_completo and email and telefone:
-            status_selecionado = st.session_state["botao_clicado"]
-            
             if consultar_status_associado(nome_completo, status_selecionado):
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
-                st.success(f"Inscrição realizada com sucesso! Status: {status_selecionado}")
+                exibir_mensagem_sucesso(nome_completo, status_selecionado)
+                st.session_state["formulario_preenchido"] = True
             else:
                 st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
         else:
             st.error("Por favor, preencha todos os campos.")
-
-    # Exibir a mensagem de sucesso conforme o botão clicado
-    if st.session_state["formulario_preenchido"]:
-        if st.session_state["botao_clicado"] == "adimplente":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        elif st.session_state["botao_clicado"] == "em_negociacao":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                                                <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
-                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                        <p><strong>VALOR: R$ 00,00</strong></p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
-                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                        <p><strong>VALOR: R$ 00,00</strong></p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state["opcao_escolhida"] == "nao_associado":
@@ -227,7 +228,6 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
 
     if st.button("ENVIAR (NÃO ASSOCIADO)"):
         if nome_completo_na and email_na and telefone_na:
-            # Salvar a inscrição no Google Sheets
             salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
             st.session_state["formulario_preenchido_nao_associado"] = True
         else:
@@ -253,15 +253,8 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
 # Botão para limpar sessão (centralizado)
 if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     st.markdown("<div class='clear-session-container'>", unsafe_allow_html=True)
-    
-    # Se o botão "Limpar Sessão" for clicado
     if st.button("Limpar Sessão"):
-        # Mantém a opção escolhida, mas limpa os campos do formulário
-        st.session_state["botao_clicado"] = None
-        st.session_state["formulario_preenchido"] = False
-        st.session_state["formulario_preenchido_nao_associado"] = False
-        st.session_state["nome_completo"] = ""
-        st.session_state["email"] = ""
-        st.session_state["telefone"] = ""
-
+        st.session_state.clear()
+        st.experimental_rerun()
     st.markdown("</div>", unsafe_allow_html=True)
+
