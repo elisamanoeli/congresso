@@ -2,9 +2,6 @@ import pandas as pd
 import streamlit as st
 from google.oauth2 import service_account
 import gspread
-import re
-
-# Adicionando a biblioteca regex para validação de email
 
 # Carregar o arquivo Excel do GitHub
 url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
@@ -30,87 +27,13 @@ def consultar_status_associado(nome_completo, status_selecionado):
     else:
         return False
 
-# Função para validar o número de telefone
-def telefone_valido(telefone):
-    # Verifica se o telefone contém apenas números
-    return bool(re.match(r'^\d+$', telefone))
-
-# Exibe o formulário de inscrição para ASSOCIADO
-if st.session_state["botao_clicado"]:
-    st.subheader("Preencha o Formulário de Inscrição")
-    
-    nome_completo = st.text_input("Nome Completo", key="nome_completo_associado")
-    email = st.text_input("Email", key="email_associado")
-    telefone = st.text_input("Telefone", key="telefone_associado")
-
-    if st.button("ENVIAR"):
-        if nome_completo and email and telefone:
-            if not email_valido(email):
-                st.error("Por favor, insira um email válido.")
-            elif not telefone_valido(telefone):
-                st.error("Por favor, insira um telefone válido (apenas números).")
-            else:
-                status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
-                if consultar_status_associado(nome_completo, status_selecionado):
-                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
-                    st.session_state["formulario_preenchido"] = True
-                else:
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
-        else:
-            st.error("Por favor, preencha todos os campos.")
-
-    if st.session_state["formulario_preenchido"]:
-        if st.session_state["botao_clicado"] == "adimplente":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        elif st.session_state["botao_clicado"] == "em_negociacao":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
-                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                        <p><strong>VALOR: R$ 00,00</strong></p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
-                        <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                        <p><strong>VALOR: R$ 00,00</strong></p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-
-# Função para validar o formato do email
+# Função para validar o email
 def email_valido(email):
-    pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-    return re.match(pattern, email)
+    return "@" in email
+
+# Função para validar o telefone (apenas números)
+def telefone_valido(telefone):
+    return telefone.isdigit()
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -170,7 +93,7 @@ st.markdown(
     .stButton>button:focus, .stButton>button:focus-visible, .stButton>button:focus-visible:active {
         outline: none !important;
         border: 2px solid #0B0C45 !important;
-        box-shadow: none !important.
+        box-shadow: none !important;
     }
     </style>
     """,
@@ -241,9 +164,10 @@ if st.session_state["botao_clicado"]:
         if nome_completo and email and telefone:
             if not email_valido(email):
                 st.error("Por favor, insira um email válido.")
+            elif not telefone_valido(telefone):
+                st.error("Por favor, insira um telefone válido (apenas números).")
             else:
                 status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
-
                 if consultar_status_associado(nome_completo, status_selecionado):
                     salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                     st.session_state["formulario_preenchido"] = True
@@ -252,19 +176,18 @@ if st.session_state["botao_clicado"]:
         else:
             st.error("Por favor, preencha todos os campos.")
 
-    # Exibir mensagem de sucesso
     if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
                         <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                                                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
                         <p>30 DE NOVEMBRO 13:30</p>
-                        <p>Local do churrasco a definir, Curitiba/PR</p>
+                                                <p>Local do churrasco a definir, Curitiba/PR</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -313,6 +236,8 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
         if nome_completo_na and email_na and telefone_na:
             if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
+            elif not telefone_valido(telefone_na):
+                st.error("Por favor, insira um telefone válido (apenas números).")
             else:
                 salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
                 st.session_state["formulario_preenchido_nao_associado"] = True
