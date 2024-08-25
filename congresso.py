@@ -1,8 +1,8 @@
-import re  # Adicionando a biblioteca regex
 import pandas as pd
 import streamlit as st
 from google.oauth2 import service_account
 import gspread
+import re  # Adicionando a biblioteca regex para validação de email
 
 # Carregar o arquivo Excel do GitHub
 url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
@@ -27,6 +27,11 @@ def consultar_status_associado(nome_completo, status_selecionado):
         return True
     else:
         return False
+
+# Função para validar o formato do email
+def email_valido(email):
+    pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    return re.match(pattern, email)
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
@@ -86,7 +91,7 @@ st.markdown(
     .stButton>button:focus, .stButton>button:focus-visible, .stButton>button:focus-visible:active {
         outline: none !important;
         border: 2px solid #0B0C45 !important;
-        box-shadow: none !important;
+        box-shadow: none !important.
     }
     </style>
     """,
@@ -149,29 +154,33 @@ if st.session_state["opcao_escolhida"] == "associado":
 if st.session_state["botao_clicado"]:
     st.subheader("Preencha o Formulário de Inscrição")
     
-    nome_completo = st.text_input("Nome Completo")
-    email = st.text_input("Email")
-    telefone = st.text_input("Telefone")
+    nome_completo = st.text_input("Nome Completo", key="nome_completo_associado")
+    email = st.text_input("Email", key="email_associado")
+    telefone = st.text_input("Telefone", key="telefone_associado")
 
     if st.button("ENVIAR"):
         if nome_completo and email and telefone:
-            status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
-
-            if consultar_status_associado(nome_completo, status_selecionado):
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
-                st.session_state["formulario_preenchido"] = True
+            if not email_valido(email):
+                st.error("Por favor, insira um email válido.")
             else:
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+                status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
+
+                if consultar_status_associado(nome_completo, status_selecionado):
+                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+                    st.session_state["formulario_preenchido"] = True
+                else:
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
         else:
             st.error("Por favor, preencha todos os campos.")
 
+    # Exibir mensagem de sucesso
     if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
                         <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                                                <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
                         <p>30 DE NOVEMBRO 7:30</p>
                         <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                         <p>Churrasco de Confraternização</p>
@@ -181,7 +190,7 @@ if st.session_state["botao_clicado"]:
                 </div>
             """, unsafe_allow_html=True)
         elif st.session_state["botao_clicado"] == "em_negociacao":
-                        st.markdown("""
+            st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                     <div style="text-align:center; color:#0B0C45;">
                         <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50% DO VALOR TOTAL</p>
@@ -217,15 +226,17 @@ if st.session_state["botao_clicado"]:
 if st.session_state["opcao_escolhida"] == "nao_associado":
     st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
     
-    nome_completo_na = st.text_input("Nome Completo (NÃO Associado)")
-    email_na = st.text_input("Email (NÃO Associado)")
-    telefone_na = st.text_input("Telefone (NÃO Associado)")
+    nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="nome_completo_na")
+    email_na = st.text_input("Email (NÃO Associado)", key="email_na")
+    telefone_na = st.text_input("Telefone (NÃO Associado)", key="telefone_na")
 
     if st.button("ENVIAR (NÃO ASSOCIADO)"):
         if nome_completo_na and email_na and telefone_na:
-            # Salvar a inscrição no Google Sheets
-            salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
-            st.session_state["formulario_preenchido_nao_associado"] = True
+            if not email_valido(email_na):
+                st.error("Por favor, insira um email válido.")
+            else:
+                salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
+                st.session_state["formulario_preenchido_nao_associado"] = True
         else:
             st.error("Por favor, preencha todos os campos.")
 
@@ -256,38 +267,12 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         st.session_state["botao_clicado"] = None
         st.session_state["formulario_preenchido"] = False
         st.session_state["formulario_preenchido_nao_associado"] = False
-        st.session_state["nome_completo"] = ""
-        st.session_state["email"] = ""
-        st.session_state["telefone"] = ""
+        st.session_state["nome_completo_associado"] = ""
+        st.session_state["email_associado"] = ""
+        st.session_state["telefone_associado"] = ""
+        st.session_state["nome_completo_na"] = ""
+        st.session_state["email_na"] = ""
+        st.session_state["telefone_na"] = ""
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Exibe o formulário de inscrição para ASSOCIADO
-if st.session_state["botao_clicado"]:
-    st.subheader("Preencha o Formulário de Inscrição")
-    
-    nome_completo = st.text_input("Nome Completo")
-    email = st.text_input("Email")
-    telefone = st.text_input("Telefone")
-
-    def email_valido(email):
-        # Usando expressão regular para validar email
-        pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-        return re.match(pattern, email)
-
-    if st.button("ENVIAR"):
-        if nome_completo and email and telefone:
-            if not email_valido(email):
-                st.error("Por favor, insira um email válido.")
-            else:
-                status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
-
-                if consultar_status_associado(nome_completo, status_selecionado):
-                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
-                    st.session_state["formulario_preenchido"] = True
-                else:
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
-        else:
-            st.error("Por favor, preencha todos os campos.")
-
-    # Exibir mensagem de sucesso (o restante do código)
