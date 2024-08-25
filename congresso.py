@@ -254,7 +254,7 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
             if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
-                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números).")
+                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
                 salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
                 st.session_state["formulario_preenchido_nao_associado"] = True
