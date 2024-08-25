@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 import gspread
 
 # URL do arquivo Excel no GitHub (substitua pelo caminho correto)
-url_excel = "https://raw.githubusercontent.com/usuario/repo/branch/caminho/para/ASIIP_PGTOS_2024_STATUS.xlsx"
+url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx"
 df_associados = pd.read_excel(url_excel)
 
 # Função para consultar o status do associado na planilha Excel
