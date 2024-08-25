@@ -187,7 +187,7 @@ if st.session_state["botao_clicado"]:
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
-                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números).")
+                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                 st.session_state["formulario_preenchido"] = True
