@@ -31,10 +31,11 @@ st.markdown(
     }
 
     /* Ocultar o botão do Streamlit no canto inferior direito */
-    footer {visibility: hidden;}
-    .viewerBadge_link__1S137 {
-        display: none !important;
-    }
+    footer {visibility: hidden !important;}
+    footer:after {content:''; display:none !important;}
+
+    .viewerBadge_container__1QSob {display: none !important;}
+    .main>.block-container {padding-top: 0 !important;}
     </style>
     """,
     unsafe_allow_html=True
