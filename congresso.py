@@ -3,7 +3,7 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
-# CSS personalizado para ocultar a barra superior do Streamlit, remover o padding superior e ocultar o botão do Streamlit
+# CSS personalizado para ocultar a barra superior do Streamlit, remover o padding superior e ocultar o rodapé do Streamlit
 st.markdown(
     """
     <style>
@@ -30,12 +30,11 @@ st.markdown(
         }
     }
 
-    /* Ocultar o botão do Streamlit no canto inferior direito */
-    footer {visibility: hidden !important;}
-    footer:after {content:''; display:none !important;}
-
-    .viewerBadge_container__1QSob {display: none !important;}
-    .main>.block-container {padding-top: 0 !important;}
+    /* Ocultar o rodapé do Streamlit (incluindo o botão no canto inferior direito) */
+    footer {visibility: hidden;}
+    .stViewerBadge {visibility: hidden;}
+    .viewerBadge_container__1QSob {visibility: hidden;}
+    .viewerBadge_link__1S137 {display: none;}
     </style>
     """,
     unsafe_allow_html=True
