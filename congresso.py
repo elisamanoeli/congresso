@@ -1,3 +1,19 @@
+# CSS personalizado para ocultar a barra superior do Streamlit
+st.markdown(
+    """
+    <style>
+    /* Remove the top header */
+    header {visibility: hidden;}
+    
+    /* Remove the padding of the main block */
+    .block-container {
+        padding-top: 0rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 import pandas as pd
 import streamlit as st
 from google.oauth2 import service_account
