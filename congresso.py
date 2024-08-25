@@ -25,14 +25,20 @@ def email_valido(email):
     return "@" in email and "." in email
 
 # Função para validar o telefone (permitindo apenas números)
+import re
+
 def validar_telefone(telefone):
-    # Remover todos os espaços e caracteres não numéricos
-    telefone = telefone.strip()
-    # Verificar se o telefone contém apenas números e tem pelo menos 10 dígitos (com DDD)
+    # Verificar se o telefone contém apenas números e tem entre 10 e 11 dígitos
     if re.fullmatch(r'\d{10,11}', telefone):
         return True
-    else:
-        return False
+    return False
+
+# Exemplo de uso
+telefone = st.text_input("Telefone")
+
+if st.button("ENVIAR"):
+    if not validar_telefone(telefone):
+        st.error("Por favor, insira um telefone válido com DDD (exemplo: 11987654321).")
 
 # Carregar as credenciais do Streamlit Secrets
 creds = service_account.Credentials.from_service_account_info(
