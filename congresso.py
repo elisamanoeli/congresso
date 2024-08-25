@@ -160,21 +160,27 @@ if st.session_state["botao_clicado"]:
     email = st.text_input("Email", key="email_associado")
     telefone = st.text_input("Telefone", key="telefone_associado")
 
-    if st.button("ENVIAR"):
-        if nome_completo and email and telefone:
-            if not email_valido(email):
-                st.error("Por favor, insira um email válido.")
-            elif not telefone_valido(telefone):
-                st.error("Por favor, insira um telefone válido (apenas números).")
-            else:
-                status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
-                if consultar_status_associado(nome_completo, status_selecionado):
-                    salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
-                    st.session_state["formulario_preenchido"] = True
-                else:
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+if st.button("ENVIAR"):
+    if nome_completo and email and telefone:
+        status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
+
+        # Primeiro, verifique o status do associado
+        if not consultar_status_associado(nome_completo, status_selecionado):
+            st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+        
+        # Se o status for válido, verifique o email e o telefone
+        elif not email_valido(email):
+            st.error("Por favor, insira um email válido.")
+        
+        elif not telefone_valido(telefone):
+            st.error("Por favor, insira um telefone válido (apenas números).")
+        
         else:
-            st.error("Por favor, preencha todos os campos.")
+            salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+            st.session_state["formulario_preenchido"] = True
+    else:
+        st.error("Por favor, preencha todos os campos.")
+)
 
     if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
