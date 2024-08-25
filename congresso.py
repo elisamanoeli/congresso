@@ -283,5 +283,9 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     if st.button("Limpar Sessão", key="btn_limpar_sessao"):
         # Limpa os campos do formulário
         st.session_state["botao_clicado"] = None
-        st.session_state
+                st.session_state["formulario_preenchido"] = False
+        st.session_state["formulario_preenchido_nao_associado"] = False
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
