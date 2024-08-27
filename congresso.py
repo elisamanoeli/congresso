@@ -191,6 +191,21 @@ st.markdown(
         background-color: #28a745;
         color: white;
     }
+
+    /* Estilo para os campos de texto */
+    input[type="text"], input[type="email"], input[type="tel"] {
+        border: 2px solid #0B0C45;  /* mesma cor azul dos botões */
+        border-radius: 10px;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Foco nos campos de texto */
+    input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus {
+        border-color: #28a745;  /* cor verde ao focar */
+        outline: none;
+    }
     </style>
     """,
     unsafe_allow_html=True
