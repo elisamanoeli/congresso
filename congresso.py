@@ -261,7 +261,7 @@ if st.session_state["opcao_escolhida"] == "associado":
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
     col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento.")
-    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique nesse botão.")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
 if st.session_state["botao_clicado"]:
@@ -281,7 +281,7 @@ if st.button("ENVIAR", key="btn_enviar"):
             elif st.session_state["botao_clicado"] == "em_negociacao":
                 st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento das mensalidades no trâmite em negociação, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição, com 50% de desconto.")
             elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso queira negociar suas mensalidades atrasadas, entre em contato conosco através do email contato@asiip.com.br.")
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
         elif not email_valido(email):
             st.error("Por favor, insira um email válido.")
         elif not telefone_valido(telefone):
