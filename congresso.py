@@ -276,7 +276,8 @@ if st.session_state["botao_clicado"]:
             status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
 
             if not consultar_status_associado(nome_completo, status_selecionado):
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento da mensalidade neste mês, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição.")
+
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
