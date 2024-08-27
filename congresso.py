@@ -4,6 +4,14 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
+# Funções de validação
+def email_valido(email):
+    return "@" in email and "." in email
+
+def telefone_valido(telefone):
+    telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
+    return telefone.isdigit() and len(telefone) == 11
+
 # Verificar se o arquivo existe no caminho esperado
 secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
 
