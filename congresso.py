@@ -80,7 +80,7 @@ st.markdown(
         border-radius: 10px;
         padding: 10px 20px;
         border: 2px solid #0B0C45;
-        -ms-touch-action: manipulation; /* Edge support for touch */
+        -ms-touch-action: manipulation; /* Edge support */
     }
     .stButton>button:hover {
         background-color: #28a745;
@@ -187,7 +187,7 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
         else:
             st.error("Por favor, preencha todos os campos.")
 
-       if st.session_state["formulario_preenchido"]:
+        if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
