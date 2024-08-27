@@ -25,6 +25,15 @@ else:
         scopes=["https://www.googleapis.com/auth/spreadsheets"]
     )
 
+    # Acessar o Google Sheets pelo ID da planilha
+    client = gspread.authorize(creds)
+    sheet = client.open_by_key("1UauLe5ti6lQVaZED5bPatnXTYUx5PgwicdLO6fs1BzY")
+    worksheet = sheet.get_worksheet(0)
+
+    # Função para enviar dados para o Google Sheets
+    def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
+        worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
+
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
