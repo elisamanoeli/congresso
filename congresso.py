@@ -292,7 +292,6 @@ if st.session_state["botao_clicado"]:
     else:
         st.error("Por favor, preencha todos os campos.")
 
-
     if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
             st.markdown("""
