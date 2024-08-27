@@ -271,7 +271,7 @@ if st.session_state["botao_clicado"]:
     email = st.text_input("Email", key="input_email")
     telefone = st.text_input("Telefone", key="input_telefone")
 
-    if st.button("ENVIAR", key="btn_enviar"):
+if st.button("ENVIAR", key="btn_enviar"):
     if nome_completo and email and telefone:
         status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
 
@@ -291,8 +291,7 @@ if st.session_state["botao_clicado"]:
             st.session_state["formulario_preenchido"] = True
     else:
         st.error("Por favor, preencha todos os campos.")
-
-    if st.session_state["formulario_preenchido"]:
+if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
             st.markdown("""
                 <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
