@@ -272,21 +272,26 @@ if st.session_state["botao_clicado"]:
     telefone = st.text_input("Telefone", key="input_telefone")
 
     if st.button("ENVIAR", key="btn_enviar"):
-        if nome_completo and email and telefone:
-            status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
+    if nome_completo and email and telefone:
+        status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
 
-            if not consultar_status_associado(nome_completo, status_selecionado):
+        if not consultar_status_associado(nome_completo, status_selecionado):
+            if st.session_state["botao_clicado"] == "adimplente":
                 st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento da mensalidade neste mês, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição.")
-
-            elif not email_valido(email):
-                st.error("Por favor, insira um email válido.")
-            elif not telefone_valido(telefone):
-                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
-            else:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
-                st.session_state["formulario_preenchido"] = True
+            elif st.session_state["botao_clicado"] == "em_negociacao":
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento das mensalidades no trâmite em negociação, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição, com 50% de desconto.")
+            elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso queira negociar suas mensalidades atrasadas, entre em contato conosco através do email contato@asiip.com.br.")
+        elif not email_valido(email):
+            st.error("Por favor, insira um email válido.")
+        elif not telefone_valido(telefone):
+            st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
         else:
-            st.error("Por favor, preencha todos os campos.")
+            salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+            st.session_state["formulario_preenchido"] = True
+    else:
+        st.error("Por favor, preencha todos os campos.")
+
 
     if st.session_state["formulario_preenchido"]:
         if st.session_state["botao_clicado"] == "adimplente":
