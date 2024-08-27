@@ -285,21 +285,16 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
             </div>
         """, unsafe_allow_html=True)
 
+import streamlit as st
+
 # Botão para limpar sessão (centralizado)
 if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     st.markdown("<div class='clear-session-container'>", unsafe_allow_html=True)
     
     # Se o botão "Limpar Sessão" for clicado
     if st.button("Limpar Sessão", key="btn_limpar_sessao"):
-        # Limpa os campos do formulário para Associados
-        st.session_state["botao_clicado"] = None
-        st.session_state["formulario_preenchido"] = False
-        # Limpa os campos do formulário para Não Associados
-        st.session_state["formulario_preenchido_nao_associado"] = False
-        st.session_state["input_nome_completo_na"] = ""
-        st.session_state["input_email_na"] = ""
-        st.session_state["input_telefone_na"] = ""
-        st.session_state["opcao_escolhida"] = None
+        # Limpa todos os estados da sessão e recarrega a página
+        st.session_state.clear()
+        st.experimental_rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
-
