@@ -293,8 +293,13 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     
     # Se o botão "Limpar Sessão" for clicado
     if st.button("Limpar Sessão", key="btn_limpar_sessao"):
-        # Limpa todos os estados da sessão e recarrega a página
-        st.session_state.clear()
-        st.experimental_rerun()
+        # Limpa os campos do formulário para Associados e Não Associados
+        st.session_state["botao_clicado"] = None
+        st.session_state["formulario_preenchido"] = False
+        st.session_state["formulario_preenchido_nao_associado"] = False
+        st.session_state["input_nome_completo_na"] = ""
+        st.session_state["input_email_na"] = ""
+        st.session_state["input_telefone_na"] = ""
+        st.session_state["opcao_escolhida"] = st.session_state["opcao_escolhida"]  # Mantém a opção escolhida
 
     st.markdown("</div>", unsafe_allow_html=True)
