@@ -57,6 +57,16 @@ else:
     def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
         worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 
+# Inicializar variáveis de estado se ainda não existirem
+if "opcao_escolhida" not in st.session_state:
+    st.session_state["opcao_escolhida"] = None
+if "botao_clicado" not in st.session_state:
+    st.session_state["botao_clicado"] = None
+if "formulario_preenchido" not in st.session_state:
+    st.session_state["formulario_preenchido"] = False
+if "formulario_preenchido_nao_associado" not in st.session_state:
+    st.session_state["formulario_preenchido_nao_associado"] = False
+
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
@@ -191,16 +201,18 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
 
     if st.button("ENVIAR", key="btn_enviar_associado"):
         if nome_completo and email and telefone:
+            status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
+
             if not nome_completo_valido(nome_completo):
                 st.error("Por favor, digite o seu nome completo sem abreviação.")
-            elif not consultar_status_associado(nome_completo, st.session_state["botao_clicado"]):
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {st.session_state['botao_clicado']}.")
+            elif not consultar_status_associado(nome_completo, status_selecionado):
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, st.session_state["botao_clicado"])
+                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                 st.session_state["formulario_preenchido"] = True
         else:
             st.error("Por favor, preencha todos os campos.")
