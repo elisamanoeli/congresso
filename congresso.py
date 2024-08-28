@@ -12,6 +12,19 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
+# Função para limpar campos
+def limpar_campos():
+    # Limpa os campos de texto para Não Associados
+    st.session_state["input_nome_completo_na"] = ""
+    st.session_state["input_email_na"] = ""
+    st.session_state["input_telefone_na"] = ""
+    st.session_state["formulario_preenchido_nao_associado"] = False
+    # Limpa os campos de texto para Associados
+    st.session_state["input_nome_completo_associado"] = ""
+    st.session_state["input_email_associado"] = ""
+    st.session_state["input_telefone_associado"] = ""
+    st.session_state["formulario_preenchido"] = False
+
 # Verificar se o arquivo existe no caminho esperado
 secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
 
@@ -293,13 +306,6 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     
     # Se o botão "Limpar Sessão" for clicado
     if st.button("Limpar Sessão", key="btn_limpar_sessao"):
-        # Limpa os campos do formulário para Associados e Não Associados
-        st.session_state["botao_clicado"] = None
-        st.session_state["formulario_preenchido"] = False
-        st.session_state["formulario_preenchido_nao_associado"] = False
-        st.session_state["input_nome_completo_na"] = ""
-        st.session_state["input_email_na"] = ""
-        st.session_state["input_telefone_na"] = ""
-        st.session_state["opcao_escolhida"] = st.session_state["opcao_escolhida"]  # Mantém a opção escolhida
+        limpar_campos()
 
     st.markdown("</div>", unsafe_allow_html=True)
