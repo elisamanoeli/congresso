@@ -161,6 +161,7 @@ with col2:
         st.session_state["opcao_escolhida"] = "nao_associado"
         st.session_state["botao_clicado"] = None
         st.session_state["formulario_preenchido_nao_associado"] = False
+        st.session_state["instituicao_selecionada"] = False
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -258,7 +259,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                 """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
-if st.session_state.get("opcao_escolhida") == "nao_associado":
+if st.session_state.get("opcao_escolhida") == "nao_associado" and not st.session_state.get("instituicao_selecionada"):
     st.subheader("Selecione sua instituição:")
     
     instituicao = st.radio(
@@ -268,34 +269,37 @@ if st.session_state.get("opcao_escolhida") == "nao_associado":
     )
     
     if instituicao:
-        st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
+        st.session_state["instituicao_selecionada"] = True
+
+if st.session_state.get("instituicao_selecionada") and st.session_state.get("opcao_escolhida") == "nao_associado":
+    st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
         
-        nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="input_nome_completo_na")
-        email_na = st.text_input("Email (NÃO Associado)", key="input_email_na")
-        telefone_na = st.text_input("Telefone", key="input_telefone_na")
+    nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="input_nome_completo_na")
+    email_na = st.text_input("Email (NÃO Associado)", key="input_email_na")
+    telefone_na = st.text_input("Telefone", key="input_telefone_na")
 
-        if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
-            if nome_completo_na and email_na and telefone_na:
-                if not email_valido(email_na):
-                    st.error("Por favor, insira um email válido.")
-                elif not telefone_valido(telefone_na):
-                    st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
-                else:
-                    salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", instituicao)
-                    st.session_state["formulario_preenchido_nao_associado"] = True
+    if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
+        if nome_completo_na and email_na and telefone_na:
+            if not email_valido(email_na):
+                st.error("Por favor, insira um email válido.")
+            elif not telefone_valido(telefone_na):
+                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
-                st.error("Por favor, preencha todos os campos.")
+                salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", st.session_state.get("instituicao"))
+                st.session_state["formulario_preenchido_nao_associado"] = True
+        else:
+            st.error("Por favor, preencha todos os campos.")
 
-        if st.session_state.get("formulario_preenchido_nao_associado"):
-            st.markdown("""
-                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                    <div style="text-align:center; color:#0B0C45;">
-                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                        <p>30 DE NOVEMBRO 7:30</p>
-                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                        <p>Churrasco de Confraternização</p>
-                        <p>30 DE NOVEMBRO 13:30</p>
-                    </div>
+    if st.session_state.get("formulario_preenchido_nao_associado"):
+        st.markdown("""
+            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                <div style="text-align:center; color:#0B0C45;">
+                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                    <p>30 DE NOVEMBRO 7:30</p>
+                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                    <p>Churrasco de Confraternização</p>
+                    <p>30 DE NOVEMBRO 13:30</p>
                 </div>
-            """, unsafe_allow_html=True)
+            </div>
+        """, unsafe_allow_html=True)
