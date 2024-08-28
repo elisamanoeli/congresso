@@ -14,22 +14,16 @@ def telefone_valido(telefone):
 
 # Função para limpar campos
 def limpar_campos():
-    # Verifica e limpa os campos de texto para Não Associados
-    if "input_nome_completo_na" in st.session_state:
-        st.session_state["input_nome_completo_na"] = ""
-    if "input_email_na" in st.session_state:
-        st.session_state["input_email_na"] = ""
-    if "input_telefone_na" in st.session_state:
-        st.session_state["input_telefone_na"] = ""
+    # Limpa os campos de texto para Não Associados
+    st.session_state["input_nome_completo_na"] = ""
+    st.session_state["input_email_na"] = ""
+    st.session_state["input_telefone_na"] = ""
     st.session_state["formulario_preenchido_nao_associado"] = False
 
-    # Verifica e limpa os campos de texto para Associados
-    if "input_nome_completo_associado" in st.session_state:
-        st.session_state["input_nome_completo_associado"] = ""
-    if "input_email_associado" in st.session_state:
-        st.session_state["input_email_associado"] = ""
-    if "input_telefone_associado" in st.session_state:
-        st.session_state["input_telefone_associado"] = ""
+    # Limpa os campos de texto para Associados
+    st.session_state["input_nome_completo_associado"] = ""
+    st.session_state["input_email_associado"] = ""
+    st.session_state["input_telefone_associado"] = ""
     st.session_state["formulario_preenchido"] = False
 
 # Inicializar variáveis de estado
@@ -56,9 +50,6 @@ if "input_email_associado" not in st.session_state:
     st.session_state["input_email_associado"] = ""
 if "input_telefone_associado" not in st.session_state:
     st.session_state["input_telefone_associado"] = ""
-
-# Verificar se o arquivo existe no caminho esperado
-secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
 
 # Verificar se as credenciais foram carregadas corretamente
 if "gcp_service_account" not in st.secrets:
@@ -119,22 +110,18 @@ st.markdown(
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        -ms-flex-direction: column; /* Edge support */
-        -webkit-flex-direction: column; /* Safari support */
     }
     .button-container {
         display: flex;
         justify-content: center;
         gap: 20px;
         margin-top: 20px;
-        -ms-flex-wrap: wrap; /* Edge support */
     }
     .clear-session-container {
         display: flex;
         justify-content: center;
         margin-top: 30px;
         margin-bottom: 30px;
-        -ms-flex-wrap: wrap; /* Edge support */
     }
     .stButton>button {
         background-color: #0B0C45;
@@ -142,7 +129,6 @@ st.markdown(
         border-radius: 10px;
         padding: 10px 20px;
         border: 2px solid #0B0C45;
-        -ms-touch-action: manipulation; /* Edge support */
     }
     .stButton>button:hover {
         background-color: #28a745;
@@ -236,103 +222,38 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
                 st.session_state["formulario_preenchido"] = True
-        else:
-            st.error("Por favor, preencha todos os campos.")
 
         if st.session_state["formulario_preenchido"]:
-    if st.session_state["botao_clicado"] == "adimplente":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    elif st.session_state["botao_clicado"] == "em_negociacao":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                    <p>Local do churrasco a definir, Curitiba/PR</p>
-                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                    <p><strong>VALOR: R$ 00,00</strong></p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                    <p>Local do churrasco a definir, Curitiba/PR</p>
-                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                    <p><strong>VALOR: R$ 00,00</strong></p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-if st.session_state["formulario_preenchido"]:
-    if st.session_state["botao_clicado"] == "adimplente":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    elif st.session_state["botao_clicado"] == "em_negociacao":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                    <p>Local do churrasco a definir, Curitiba/PR</p>
-                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                    <p><strong>VALOR: R$ 00,00</strong></p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                    <p>Local do churrasco a definir, Curitiba/PR</p>
-                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                    <p><strong>VALOR: R$ 00,00</strong></p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-                        elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+            if st.session_state["botao_clicado"] == "adimplente":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+            elif st.session_state["botao_clicado"] == "em_negociacao":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                            <p>Local do churrasco a definir, Curitiba/PR</p>
+                            <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                            <p><strong>VALOR: R$ 00,00</strong></p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+            elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
                 st.markdown("""
                     <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                         <div style="text-align:center; color:#0B0C45;">
@@ -370,22 +291,19 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
             st.error("Por favor, preencha todos os campos.")
 
     if st.session_state["formulario_preenchido_nao_associado"]:
-                        st.markdown("""
-                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                        <div style="text-align:center; color:#0B0C45;">
-                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                            <p>30 DE NOVEMBRO 7:30</p>
-                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                            <p>Churrasco de Confraternização</p>
-                            <p>30 DE NOVEMBRO 13:30</p>
-                            <p>Local do churrasco a definir, Curitiba/PR</p>
-                            <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                            <p><strong>VALOR: R$ 00,00</strong></p>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-
+        st.markdown("""
+            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                <div style="text-align:center; color:#0B0C45;">
+                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                    <p>30 DE NOVEMBRO 7:30</p>
+                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                    <p>Churrasco de Confraternização</p>
+                    <p>30 DE NOVEMBRO 13:30</p>
+                    <p>Local do churrasco a definir, Curitiba/PR</p>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
 # Botão para limpar sessão (centralizado)
 if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
