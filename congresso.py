@@ -12,15 +12,28 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
-# Inicializar variáveis de estado
-if "opcao_escolhida" not in st.session_state:
-    st.session_state["opcao_escolhida"] = None
-if "botao_clicado" not in st.session_state:
-    st.session_state["botao_clicado"] = None
-if "formulario_preenchido" not in st.session_state:
-    st.session_state["formulario_preenchido"] = False
-if "formulario_preenchido_nao_associado" not in st.session_state:
-    st.session_state["formulario_preenchido_nao_associado"] = False
+def nome_completo_valido(nome):
+    partes_nome = nome.strip().split()
+    if len(partes_nome) < 2:  # Verifica se tem menos de duas palavras
+        return False
+    for parte in partes_nome[1:]:  # Verifica se qualquer parte do sobrenome tem menos de 3 letras (abreviação)
+        if len(parte) < 3:
+            return False
+    return True
+
+# Função para consultar o status do associado na planilha "ASIIP PGTOS 2024 - STATUS.xlsx"
+def consultar_status_associado(nome, status_desejado):
+    # URL do arquivo "ASIIP PGTOS 2024 - STATUS.xlsx" no GitHub
+    url = 'https://raw.githubusercontent.com/usuario/repositorio/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx'
+    
+    # Ler o arquivo do GitHub diretamente
+    df = pd.read_excel(url)
+    
+    # Verificar se o nome e o status estão na planilha
+    associado = df[df['Nome'].str.contains(nome, case=False, na=False)]
+    if not associado.empty and associado['Status'].str.lower().iloc[0] == status_desejado.lower():
+        return True
+    return False
 
 # Verificar se o arquivo existe no caminho esperado
 secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
@@ -178,21 +191,16 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
 
     if st.button("ENVIAR", key="btn_enviar_associado"):
         if nome_completo and email and telefone:
-            status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
-
-            if not consultar_status_associado(nome_completo, status_selecionado):
-                if st.session_state["botao_clicado"] == "adimplente":
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento da mensalidade neste mês, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição.")
-                elif st.session_state["botao_clicado"] == "em_negociacao":
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento das mensalidades no trâmite em negociação, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição, com 50% de desconto.")
-                elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+            if not nome_completo_valido(nome_completo):
+                st.error("Por favor, digite o seu nome completo sem abreviação.")
+            elif not consultar_status_associado(nome_completo, st.session_state["botao_clicado"]):
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {st.session_state['botao_clicado']}.")
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+                salvar_inscricao_google_sheets(nome_completo, email, telefone, st.session_state["botao_clicado"])
                 st.session_state["formulario_preenchido"] = True
         else:
             st.error("Por favor, preencha todos os campos.")
@@ -254,7 +262,9 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
 
     if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
         if nome_completo_na and email_na and telefone_na:
-            if not email_valido(email_na):
+            if not nome_completo_valido(nome_completo_na):
+                st.error("Por favor, digite o seu nome completo sem abreviação.")
+            elif not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
