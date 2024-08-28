@@ -269,7 +269,7 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-            elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+                        elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
                 st.markdown("""
                     <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
                         <div style="text-align:center; color:#0B0C45;">
@@ -284,7 +284,7 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
                             <p><strong>VALOR: R$ 00,00</strong></p>
                         </div>
                     </div>
-                """, unsafe.allow_html=True)
+                """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state["opcao_escolhida"] == "nao_associado":
