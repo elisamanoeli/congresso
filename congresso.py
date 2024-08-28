@@ -195,9 +195,9 @@ if st.session_state["opcao_escolhida"] == "associado":
 
         if col1.button("ADIMPLENTE", key="btn_adimplente"):
         st.session_state["botao_clicado"] = "adimplente"
-    if col2.button("EM NEGOCIAÇÃO", key="btn_em_negociacao"):
+    	if col2.button("EM NEGOCIAÇÃO", key="btn_em_negociacao"):
         st.session_state["botao_clicado"] = "em_negociacao"
-    if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
+    	if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
         st.session_state["botao_clicado"] = "mensalidade_atrasada"
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
