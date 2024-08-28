@@ -36,8 +36,6 @@ def consultar_status_associado(nome_completo, status_selecionado):
     
     return not associado.empty
 
-# Continue com o resto do seu código...
-
 # Funções de validação
 def email_valido(email):
     return "@" in email and "." in email
@@ -54,8 +52,8 @@ if "gcp_service_account" in st.secrets:
     worksheet = sheet.get_worksheet(0)
 
     # Função para enviar dados para o Google Sheets
-    def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
-        worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
+    def salvar_inscricao_google_sheets(nome, email, telefone, categoria, instituicao):
+        worksheet.append_row([nome, email, telefone, categoria, instituicao, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
@@ -207,7 +205,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
             elif not telefone_valido(telefone):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado)
+                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
                 st.session_state["formulario_preenchido"] = True
         else:
             st.error("Por favor, preencha todos os campos.")
@@ -261,34 +259,43 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
-    st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
+    st.subheader("Selecione sua instituição:")
     
-    nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="input_nome_completo_na")
-    email_na = st.text_input("Email (NÃO Associado)", key="input_email_na")
-    telefone_na = st.text_input("Telefone", key="input_telefone_na")
+    instituicao = st.radio(
+        "Escolha uma opção:",
+        ("Polícia Federal", "Polícia Civil", "Polícia Militar", "Guarda Municipal"),
+        key="instituicao"
+    )
+    
+    if instituicao:
+        st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
+        
+        nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="input_nome_completo_na")
+        email_na = st.text_input("Email (NÃO Associado)", key="input_email_na")
+        telefone_na = st.text_input("Telefone", key="input_telefone_na")
 
-    if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
-        if nome_completo_na and email_na and telefone_na:
-            if not email_valido(email_na):
-                st.error("Por favor, insira um email válido.")
-            elif not telefone_valido(telefone_na):
-                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
+        if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
+            if nome_completo_na and email_na and telefone_na:
+                if not email_valido(email_na):
+                    st.error("Por favor, insira um email válido.")
+                elif not telefone_valido(telefone_na):
+                    st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
+                else:
+                    salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", instituicao)
+                    st.session_state["formulario_preenchido_nao_associado"] = True
             else:
-                salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO")
-                st.session_state["formulario_preenchido_nao_associado"] = True
-        else:
-            st.error("Por favor, preencha todos os campos.")
+                st.error("Por favor, preencha todos os campos.")
 
-    if st.session_state["formulario_preenchido_nao_associado"]:
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
+        if st.session_state.get("formulario_preenchido_nao_associado"):
+            st.markdown("""
+                <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                    <div style="text-align:center; color:#0B0C45;">
+                        <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                        <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                        <p>30 DE NOVEMBRO 7:30</p>
+                        <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                        <p>Churrasco de Confraternização</p>
+                        <p>30 DE NOVEMBRO 13:30</p>
+                    </div>
                 </div>
-            </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
