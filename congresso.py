@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import streamlit as st
+import requests
+from io import BytesIO
 from google.oauth2 import service_account
 import gspread
 
@@ -13,9 +15,14 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Credenciais do GCP não encontradas. Verifique o arquivo secrets.toml.")
 
-# Carregar o arquivo Excel do GitHub
-url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20STATUS.xlsx"
-df_associados = pd.read_excel(url_excel)
+# Tentar carregar o arquivo Excel do GitHub com requests
+url_excel = "https://github.com/elisamanoeli/congresso/blob/main/ASIIP_STATUS.xlsx"
+try:
+    response = requests.get(url_excel)
+    response.raise_for_status()  # Levanta um erro para códigos de status HTTP 4xx/5xx
+    df_associados = pd.read_excel(BytesIO(response.content))
+except requests.exceptions.RequestException as e:
+    st.error(f"Não foi possível carregar o arquivo Excel: {e}")
 
 # Função para consultar o status do associado na planilha Excel
 def consultar_status_associado(nome_completo, status_selecionado):
@@ -28,6 +35,8 @@ def consultar_status_associado(nome_completo, status_selecionado):
     ]
     
     return not associado.empty
+
+# Continue com o resto do seu código...
 
 # Funções de validação
 def email_valido(email):
