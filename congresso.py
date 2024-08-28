@@ -12,18 +12,18 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
-# INSIRA AQUI A FUNÇÃO `limpar_campos`
+# Função para limpar campos
 def limpar_campos():
-    # Verifica e limpa os campos de texto para Não Associados
-    st.session_state.setdefault("input_nome_completo_na", "")
-    st.session_state.setdefault("input_email_na", "")
-    st.session_state.setdefault("input_telefone_na", "")
+    # Limpa os campos de texto para Não Associados
+    st.session_state["input_nome_completo_na"] = ""
+    st.session_state["input_email_na"] = ""
+    st.session_state["input_telefone_na"] = ""
     st.session_state["formulario_preenchido_nao_associado"] = False
 
-    # Verifica e limpa os campos de texto para Associados
-    st.session_state.setdefault("input_nome_completo_associado", "")
-    st.session_state.setdefault("input_email_associado", "")
-    st.session_state.setdefault("input_telefone_associado", "")
+    # Limpa os campos de texto para Associados
+    st.session_state["input_nome_completo_associado"] = ""
+    st.session_state["input_email_associado"] = ""
+    st.session_state["input_telefone_associado"] = ""
     st.session_state["formulario_preenchido"] = False
 
 # Verificar se o arquivo existe no caminho esperado
@@ -193,7 +193,7 @@ if st.session_state["opcao_escolhida"] == "associado":
 
     col1, col2, col3 = st.columns(3)
 
-    if col1.button("ADIMPLENTE", key="btn_adimplente"):
+        if col1.button("ADIMPLENTE", key="btn_adimplente"):
         st.session_state["botao_clicado"] = "adimplente"
     if col2.button("EM NEGOCIAÇÃO", key="btn_em_negociacao"):
         st.session_state["botao_clicado"] = "em_negociacao"
@@ -314,8 +314,6 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
             </div>
         """, unsafe_allow_html=True)
 
-import streamlit as st
-
 # Botão para limpar sessão (centralizado)
 if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
     st.markdown("<div class='clear-session-container'>", unsafe_allow_html=True)
@@ -325,3 +323,4 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         limpar_campos()
 
     st.markdown("</div>", unsafe_allow_html=True)
+
