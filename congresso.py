@@ -12,6 +12,26 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
+# Função para limpar campos
+def limpar_campos():
+    # Verifica e limpa os campos de texto para Não Associados
+    if "input_nome_completo_na" in st.session_state:
+        st.session_state["input_nome_completo_na"] = ""
+    if "input_email_na" in st.session_state:
+        st.session_state["input_email_na"] = ""
+    if "input_telefone_na" in st.session_state:
+        st.session_state["input_telefone_na"] = ""
+    st.session_state["formulario_preenchido_nao_associado"] = False
+
+    # Verifica e limpa os campos de texto para Associados
+    if "input_nome_completo_associado" in st.session_state:
+        st.session_state["input_nome_completo_associado"] = ""
+    if "input_email_associado" in st.session_state:
+        st.session_state["input_email_associado"] = ""
+    if "input_telefone_associado" in st.session_state:
+        st.session_state["input_telefone_associado"] = ""
+    st.session_state["formulario_preenchido"] = False
+
 # Inicializar variáveis de estado
 if "opcao_escolhida" not in st.session_state:
     st.session_state["opcao_escolhida"] = None
@@ -36,18 +56,6 @@ if "input_email_associado" not in st.session_state:
     st.session_state["input_email_associado"] = ""
 if "input_telefone_associado" not in st.session_state:
     st.session_state["input_telefone_associado"] = ""
-
-# Função para limpar campos
-def limpar_campos():
-    st.session_state["input_nome_completo_na"] = ""
-    st.session_state["input_email_na"] = ""
-    st.session_state["input_telefone_na"] = ""
-    st.session_state["formulario_preenchido_nao_associado"] = False
-
-    st.session_state["input_nome_completo_associado"] = ""
-    st.session_state["input_email_associado"] = ""
-    st.session_state["input_telefone_associado"] = ""
-    st.session_state["formulario_preenchido"] = False
 
 # Verificar se o arquivo existe no caminho esperado
 secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
@@ -276,7 +284,7 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
                             <p><strong>VALOR: R$ 00,00</strong></p>
                         </div>
                     </div>
-                """, unsafe_allow_html=True)
+                """, unsafe.allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state["opcao_escolhida"] == "nao_associado":
@@ -321,4 +329,3 @@ if st.session_state["opcao_escolhida"] or st.session_state["botao_clicado"]:
         limpar_campos()
 
     st.markdown("</div>", unsafe_allow_html=True)
-
