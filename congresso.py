@@ -21,10 +21,10 @@ def nome_completo_valido(nome):
             return False
     return True
 
-# Função para consultar o status do associado na planilha "ASIIP PGTOS 2024 - STATUS.xlsx"
+# Função para consultar o status do associado na planilha "ASIIP_STATUS.xlsx"
 def consultar_status_associado(nome, status_desejado):
-    # URL do arquivo "ASIIP PGTOS 2024 - STATUS.xlsx" no GitHub
-    url = 'https://raw.githubusercontent.com/usuario/repositorio/main/ASIIP%20PGTOS%202024%20-%20STATUS.xlsx'
+    # URL do arquivo "ASIIP_STATUS.xlsx" no GitHub
+    url = 'https://raw.githubusercontent.com/usuario/repositorio/main/ASIIP_STATUS.xlsx'
     
     # Ler o arquivo do GitHub diretamente
     df = pd.read_excel(url)
