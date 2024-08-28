@@ -153,6 +153,21 @@ if "formulario_preenchido" not in st.session_state:
 if "formulario_preenchido_nao_associado" not in st.session_state:
     st.session_state["formulario_preenchido_nao_associado"] = False
 
+# Inicializar os campos de texto no session state se ainda não existirem
+if "input_nome_completo_na" not in st.session_state:
+    st.session_state["input_nome_completo_na"] = ""
+if "input_email_na" not in st.session_state:
+    st.session_state["input_email_na"] = ""
+if "input_telefone_na" not in st.session_state:
+    st.session_state["input_telefone_na"] = ""
+
+if "input_nome_completo_associado" not in st.session_state:
+    st.session_state["input_nome_completo_associado"] = ""
+if "input_email_associado" not in st.session_state:
+    st.session_state["input_email_associado"] = ""
+if "input_telefone_associado" not in st.session_state:
+    st.session_state["input_telefone_associado"] = ""
+
 # Exibe o layout dos botões centrados
 st.image("logo.png", width=200)
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
