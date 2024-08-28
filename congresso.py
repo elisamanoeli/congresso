@@ -5,6 +5,9 @@ import requests
 from io import BytesIO
 from google.oauth2 import service_account
 import gspread
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # Verifica se as credenciais do GCP estão no st.secrets
 if "gcp_service_account" in st.secrets:
@@ -103,6 +106,8 @@ if "gcp_service_account" in st.secrets:
         worksheet.append_row([nome, email, telefone, categoria, instituicao, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
+
+# O código para a interface do usuário continua...
 
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
