@@ -37,6 +37,25 @@ if "opcao_escolhida" not in st.session_state:
     st.session_state["opcao_escolhida"] = None
 if "botao_clicado" not in st.session_state:
     st.session_state["botao_clicado"] = None
+if "formulario_preenchido" not in st.session_state:
+    st.session_state["formulario_preenchido"] = False
+if "formulario_preenchido_nao_associado" not in st.session_state:
+    st.session_state["formulario_preenchido_nao_associado"] = False
+
+# Inicializar os campos de texto no session state se ainda não existirem
+if "input_nome_completo_na" not in st.session_state:
+    st.session_state["input_nome_completo_na"] = ""
+if "input_email_na" not in st.session_state:
+    st.session_state["input_email_na"] = ""
+if "input_telefone_na" not in st.session_state:
+    st.session_state["input_telefone_na"] = ""
+
+if "input_nome_completo_associado" not in st.session_state:
+    st.session_state["input_nome_completo_associado"] = ""
+if "input_email_associado" not in st.session_state:
+    st.session_state["input_email_associado"] = ""
+if "input_telefone_associado" not in st.session_state:
+    st.session_state["input_telefone_associado"] = ""
 
 # Verificar se o arquivo existe no caminho esperado
 secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
@@ -223,21 +242,17 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
         if st.session_state["formulario_preenchido"]:
             if st.session_state["botao_clicado"] == "adimplente":
                 st.markdown("""
-    			<div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-        			<div style="text-align:center; color:#0B0C45;">
-            				<p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
-           				 <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-           				 <p>30 DE NOVEMBRO 7:30</p>
-           				 <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-          				 <p>Churrasco de Confraternização</p>
-            				 <p>30 DE NOVEMBRO 13:30</p>
-            				 <p>Local do churrasco a definir, Curitiba/PR</p>
-           				 <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-          				 <p><strong>VALOR: R$ 00,00</strong></p>
-       				     </div>
-   				 </div>
-			     """, unsafe_allow_html=True)
-
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
             elif st.session_state["botao_clicado"] == "em_negociacao":
                 st.markdown("""
                     <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
@@ -269,7 +284,7 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
                             <p><strong>VALOR: R$ 00,00</strong></p>
                         </div>
                     </div>
-                """, unsafe.allow_html=True)
+                """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state["opcao_escolhida"] == "nao_associado":
