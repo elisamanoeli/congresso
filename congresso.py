@@ -12,17 +12,24 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
-# Função para limpar campos
+# INSIRA AQUI A FUNÇÃO `limpar_campos`
 def limpar_campos():
-    # Limpa os campos de texto para Não Associados
-    st.session_state["input_nome_completo_na"] = ""
-    st.session_state["input_email_na"] = ""
-    st.session_state["input_telefone_na"] = ""
+    # Verifica e limpa os campos de texto para Não Associados
+    if "input_nome_completo_na" in st.session_state:
+        st.session_state["input_nome_completo_na"] = ""
+    if "input_email_na" in st.session_state:
+        st.session_state["input_email_na"] = ""
+    if "input_telefone_na" in st.session_state:
+        st.session_state["input_telefone_na"] = ""
     st.session_state["formulario_preenchido_nao_associado"] = False
-    # Limpa os campos de texto para Associados
-    st.session_state["input_nome_completo_associado"] = ""
-    st.session_state["input_email_associado"] = ""
-    st.session_state["input_telefone_associado"] = ""
+
+    # Verifica e limpa os campos de texto para Associados
+    if "input_nome_completo_associado" in st.session_state:
+        st.session_state["input_nome_completo_associado"] = ""
+    if "input_email_associado" in st.session_state:
+        st.session_state["input_email_associado"] = ""
+    if "input_telefone_associado" in st.session_state:
+        st.session_state["input_telefone_associado"] = ""
     st.session_state["formulario_preenchido"] = False
 
 # Verificar se o arquivo existe no caminho esperado
