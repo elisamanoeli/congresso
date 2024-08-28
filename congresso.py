@@ -16,7 +16,7 @@ else:
     st.error("Credenciais do GCP não encontradas. Verifique o arquivo secrets.toml.")
 
 # Tentar carregar o arquivo Excel do GitHub com requests
-url_excel = "https://github.com/elisamanoeli/congresso/blob/main/ASIIP_STATUS.xlsx"
+url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP_STATUS.xlsx"
 try:
     response = requests.get(url_excel)
     response.raise_for_status()  # Levanta um erro para códigos de status HTTP 4xx/5xx
