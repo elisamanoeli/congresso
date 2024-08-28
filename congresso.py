@@ -155,8 +155,8 @@ if st.session_state["opcao_escolhida"] == "associado":
         st.session_state["botao_clicado"] = "mensalidade_atrasada"
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
-    col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento.")
-    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (entre em contato via contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
+    col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento. Se ainda não negociou as mensalidades atrasadas, envie um email para contato@asiip.com.br")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (envie um email para contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
 if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == "associado":
