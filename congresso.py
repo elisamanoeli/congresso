@@ -14,31 +14,25 @@ def telefone_valido(telefone):
 
 # Função para limpar campos
 def limpar_campos():
-    # Limpa os campos de texto no session state
-    st.session_state["input_nome_completo_na"] = ""
-    st.session_state["input_email_na"] = ""
-    st.session_state["input_telefone_na"] = ""
-    st.session_state["input_nome_completo_associado"] = ""
-    st.session_state["input_email_associado"] = ""
-    st.session_state["input_telefone_associado"] = ""
+    # Verifica e limpa os campos de texto para Não Associados
+    if "input_nome_completo_na" in st.session_state:
+        st.session_state["input_nome_completo_na"] = ""
+    if "input_email_na" in st.session_state:
+        st.session_state["input_email_na"] = ""
+    if "input_telefone_na" in st.session_state:
+        st.session_state["input_telefone_na"] = ""
     st.session_state["formulario_preenchido_nao_associado"] = False
+
+    # Verifica e limpa os campos de texto para Associados
+    if "input_nome_completo_associado" in st.session_state:
+        st.session_state["input_nome_completo_associado"] = ""
+    if "input_email_associado" in st.session_state:
+        st.session_state["input_email_associado"] = ""
+    if "input_telefone_associado" in st.session_state:
+        st.session_state["input_telefone_associado"] = ""
     st.session_state["formulario_preenchido"] = False
 
 # Inicializar variáveis de estado
-if "input_nome_completo_na" not in st.session_state:
-    st.session_state["input_nome_completo_na"] = ""
-if "input_email_na" not in st.session_state:
-    st.session_state["input_email_na"] = ""
-if "input_telefone_na" not in st.session_state:
-    st.session_state["input_telefone_na"] = ""
-
-if "input_nome_completo_associado" not in st.session_state:
-    st.session_state["input_nome_completo_associado"] = ""
-if "input_email_associado" not in st.session_state:
-    st.session_state["input_email_associado"] = ""
-if "input_telefone_associado" not in st.session_state:
-    st.session_state["input_telefone_associado"] = ""
-
 if "opcao_escolhida" not in st.session_state:
     st.session_state["opcao_escolhida"] = None
 if "botao_clicado" not in st.session_state:
@@ -271,7 +265,7 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
                             <p><strong>VALOR: R$ 00,00</strong></p>
                         </div>
                     </div>
-                """, unsafe_allow_html=True)
+                """, unsafe.allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state["opcao_escolhida"] == "nao_associado":
