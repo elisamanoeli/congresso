@@ -44,6 +44,53 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
+# Função para enviar e-mail de confirmação
+def enviar_email_confirmacao(nome, email):
+    # Configurações do servidor SMTP
+    smtp_server = "mail.asiip.com.br"
+    smtp_port = 465
+    smtp_user = "contato@asiip.com.br"
+    smtp_password = "senhaparaocongresso"  # Substitua pela sua senha
+
+    # Configurando a mensagem
+    msg = MIMEMultipart()
+    msg['From'] = smtp_user
+    msg['To'] = email
+    msg['Subject'] = "Confirmação de Inscrição - I Congresso de Papiloscopia da ASIIP"
+
+    body = f"""
+    Olá {nome},
+
+    Sua inscrição no I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana foi efetuada com sucesso!
+
+    Detalhes do evento:
+    Data: 30 de Novembro
+    Horário: 7:30
+    Local: Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR
+
+    Churrasco de Confraternização:
+    Data: 30 de Novembro
+    Horário: 13:30
+    Local: A definir, Curitiba/PR
+
+    Aguardamos sua presença!
+
+    Atenciosamente,
+    ASIIP
+    """
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Enviando o e-mail
+    try:
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(smtp_user, smtp_password)
+        server.sendmail(smtp_user, email, msg.as_string())
+        server.quit()
+        st.success("E-mail de confirmação enviado com sucesso!")
+    except Exception as e:
+        st.error(f"Erro ao enviar o e-mail: {e}")
+
 # Verificação das credenciais e conexão com o Google Sheets
 if "gcp_service_account" in st.secrets:
     # Acessar o Google Sheets pelo ID da planilha
