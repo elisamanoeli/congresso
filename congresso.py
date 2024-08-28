@@ -4,6 +4,31 @@ import streamlit as st
 from google.oauth2 import service_account
 import gspread
 
+# Verifica se as credenciais do GCP estão no st.secrets
+if "gcp_service_account" in st.secrets:
+    creds = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=["https://www.googleapis.com/auth/spreadsheets"]
+    )
+else:
+    st.error("Credenciais do GCP não encontradas. Verifique o arquivo secrets.toml.")
+
+# Carregar o arquivo Excel do GitHub
+url_excel = "https://github.com/elisamanoeli/congresso/raw/main/ASIIP%20STATUS.xlsx"
+df_associados = pd.read_excel(url_excel)
+
+# Função para consultar o status do associado na planilha Excel
+def consultar_status_associado(nome_completo, status_selecionado):
+    nome_completo = nome_completo.strip().lower()
+    df_associados['Nome Completo'] = df_associados['Nome Completo'].str.strip().str.lower()
+
+    associado = df_associados[
+        (df_associados['Nome Completo'] == nome_completo) & 
+        (df_associados['status'].str.lower() == status_selecionado.lower())
+    ]
+    
+    return not associado.empty
+
 # Funções de validação
 def email_valido(email):
     return "@" in email and "." in email
@@ -12,42 +37,8 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
-def nome_completo_valido(nome):
-    partes_nome = nome.strip().split()
-    if len(partes_nome) < 2:  # Verifica se tem menos de duas palavras
-        return False
-    for parte in partes_nome[1:]:  # Verifica se qualquer parte do sobrenome tem menos de 3 letras (abreviação)
-        if len(parte) < 3:
-            return False
-    return True
-
-# Função para consultar o status do associado na planilha "ASIIP_STATUS.xlsx"
-def consultar_status_associado(nome, status_desejado):
-    # URL do arquivo "ASIIP_STATUS.xlsx" no GitHub
-    url = 'https://github.com/elisamanoeli/congresso/blob/main/ASIIP_STATUS.xlsx'
-    
-    # Ler o arquivo do GitHub diretamente
-    df = pd.read_excel(url)
-    
-    # Verificar se o nome e o status estão na planilha
-    associado = df[df['Nome'].str.contains(nome, case=False, na=False)]
-    if not associado.empty and associado['Status'].str.lower().iloc[0] == status_desejado.lower():
-        return True
-    return False
-
-# Verificar se o arquivo existe no caminho esperado
-secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
-
-# Verificar se as credenciais foram carregadas corretamente
-if "gcp_service_account" not in st.secrets:
-    st.error("Credenciais do GCP não encontradas. Verifique o arquivo secrets.toml.")
-else:
-    # Carregar as credenciais do Google Cloud a partir de st.secrets
-    creds = service_account.Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=["https://www.googleapis.com/auth/spreadsheets"]
-    )
-
+# Verificação das credenciais e conexão com o Google Sheets
+if "gcp_service_account" in st.secrets:
     # Acessar o Google Sheets pelo ID da planilha
     client = gspread.authorize(creds)
     sheet = client.open_by_key("1UauLe5ti6lQVaZED5bPatnXTYUx5PgwicdLO6fs1BzY")
@@ -56,16 +47,8 @@ else:
     # Função para enviar dados para o Google Sheets
     def salvar_inscricao_google_sheets(nome, email, telefone, categoria):
         worksheet.append_row([nome, email, telefone, categoria, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
-
-# Inicializar variáveis de estado se ainda não existirem
-if "opcao_escolhida" not in st.session_state:
-    st.session_state["opcao_escolhida"] = None
-if "botao_clicado" not in st.session_state:
-    st.session_state["botao_clicado"] = None
-if "formulario_preenchido" not in st.session_state:
-    st.session_state["formulario_preenchido"] = False
-if "formulario_preenchido_nao_associado" not in st.session_state:
-    st.session_state["formulario_preenchido_nao_associado"] = False
+else:
+    st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
@@ -175,7 +158,7 @@ with col2:
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Exibe o formulário se ASSOCIADO foi clicado
-if st.session_state["opcao_escolhida"] == "associado":
+if st.session_state.get("opcao_escolhida") == "associado":
     st.subheader("Selecione a Situação - Associado")
 
     col1, col2, col3 = st.columns(3)
@@ -192,7 +175,7 @@ if st.session_state["opcao_escolhida"] == "associado":
     col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (envie um email para contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
 
 # Exibe o formulário de inscrição para ASSOCIADO
-if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == "associado":
+if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhida") == "associado":
     st.subheader("Preencha o Formulário de Inscrição")
     
     nome_completo = st.text_input("Nome Completo", key="input_nome_completo_associado")
@@ -203,10 +186,13 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
         if nome_completo and email and telefone:
             status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
 
-            if not nome_completo_valido(nome_completo):
-                st.error("Por favor, digite o seu nome completo sem abreviação.")
-            elif not consultar_status_associado(nome_completo, status_selecionado):
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+            if not consultar_status_associado(nome_completo, status_selecionado):
+                if st.session_state["botao_clicado"] == "adimplente":
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento da mensalidade neste mês, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição.")
+                elif st.session_state["botao_clicado"] == "em_negociacao":
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento das mensalidades no trâmite em negociação, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição, com 50% de desconto.")
+                elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
@@ -265,7 +251,7 @@ if st.session_state["botao_clicado"] and st.session_state["opcao_escolhida"] == 
                 """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
-if st.session_state["opcao_escolhida"] == "nao_associado":
+if st.session_state.get("opcao_escolhida") == "nao_associado":
     st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
     
     nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="input_nome_completo_na")
@@ -274,9 +260,7 @@ if st.session_state["opcao_escolhida"] == "nao_associado":
 
     if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
         if nome_completo_na and email_na and telefone_na:
-            if not nome_completo_valido(nome_completo_na):
-                st.error("Por favor, digite o seu nome completo sem abreviação.")
-            elif not email_valido(email_na):
+            if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
