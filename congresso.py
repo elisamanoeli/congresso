@@ -14,6 +14,21 @@ def telefone_valido(telefone):
 
 # Função para limpar campos
 def limpar_campos():
+    # Inicializa as chaves antes de tentar limpá-las
+    if "input_nome_completo_na" not in st.session_state:
+        st.session_state["input_nome_completo_na"] = ""
+    if "input_email_na" not in st.session_state:
+        st.session_state["input_email_na"] = ""
+    if "input_telefone_na" not in st.session_state:
+        st.session_state["input_telefone_na"] = ""
+
+    if "input_nome_completo_associado" not in st.session_state:
+        st.session_state["input_nome_completo_associado"] = ""
+    if "input_email_associado" not in st.session_state:
+        st.session_state["input_email_associado"] = ""
+    if "input_telefone_associado" not in st.session_state:
+        st.session_state["input_telefone_associado"] = ""
+
     # Limpa os campos de texto para Não Associados
     st.session_state["input_nome_completo_na"] = ""
     st.session_state["input_email_na"] = ""
