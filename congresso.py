@@ -259,7 +259,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                 """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
-if st.session_state.get("opcao_escolhida") == "nao_associado" and not st.session_state.get("instituicao_selecionada"):
+if st.session_state.get("opcao_escolhida") == "nao_associado":
     st.subheader("Selecione sua instituição:")
     
     instituicao = st.radio(
@@ -267,7 +267,7 @@ if st.session_state.get("opcao_escolhida") == "nao_associado" and not st.session
         ("Polícia Federal", "Polícia Civil", "Polícia Militar", "Guarda Municipal"),
         key="instituicao"
     )
-    
+
     if instituicao:
         st.session_state["instituicao_selecionada"] = True
 
