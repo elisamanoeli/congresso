@@ -12,6 +12,16 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
+# Inicializar variáveis de estado
+if "opcao_escolhida" not in st.session_state:
+    st.session_state["opcao_escolhida"] = None
+if "botao_clicado" not in st.session_state:
+    st.session_state["botao_clicado"] = None
+if "formulario_preenchido" not in st.session_state:
+    st.session_state["formulario_preenchido"] = False
+if "formulario_preenchido_nao_associado" not in st.session_state:
+    st.session_state["formulario_preenchido_nao_associado"] = False
+
 # Verificar se o arquivo existe no caminho esperado
 secrets_path = os.path.join(os.getcwd(), '.streamlit', 'secrets.toml')
 
