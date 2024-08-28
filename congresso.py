@@ -12,15 +12,38 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
+# Inicializar variáveis de estado
+if "opcao_escolhida" not in st.session_state:
+    st.session_state["opcao_escolhida"] = None
+if "botao_clicado" not in st.session_state:
+    st.session_state["botao_clicado"] = None
+if "formulario_preenchido" not in st.session_state:
+    st.session_state["formulario_preenchido"] = False
+if "formulario_preenchido_nao_associado" not in st.session_state:
+    st.session_state["formulario_preenchido_nao_associado"] = False
+
+# Inicializar os campos de texto no session state se ainda não existirem
+if "input_nome_completo_na" not in st.session_state:
+    st.session_state["input_nome_completo_na"] = ""
+if "input_email_na" not in st.session_state:
+    st.session_state["input_email_na"] = ""
+if "input_telefone_na" not in st.session_state:
+    st.session_state["input_telefone_na"] = ""
+
+if "input_nome_completo_associado" not in st.session_state:
+    st.session_state["input_nome_completo_associado"] = ""
+if "input_email_associado" not in st.session_state:
+    st.session_state["input_email_associado"] = ""
+if "input_telefone_associado" not in st.session_state:
+    st.session_state["input_telefone_associado"] = ""
+
 # Função para limpar campos
 def limpar_campos():
-    # Limpa os campos de texto para Não Associados
     st.session_state["input_nome_completo_na"] = ""
     st.session_state["input_email_na"] = ""
     st.session_state["input_telefone_na"] = ""
     st.session_state["formulario_preenchido_nao_associado"] = False
 
-    # Limpa os campos de texto para Associados
     st.session_state["input_nome_completo_associado"] = ""
     st.session_state["input_email_associado"] = ""
     st.session_state["input_telefone_associado"] = ""
@@ -137,31 +160,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Inicializar variáveis de estado
-if "opcao_escolhida" not in st.session_state:
-    st.session_state["opcao_escolhida"] = None
-if "botao_clicado" not in st.session_state:
-    st.session_state["botao_clicado"] = None
-if "formulario_preenchido" not in st.session_state:
-    st.session_state["formulario_preenchido"] = False
-if "formulario_preenchido_nao_associado" not in st.session_state:
-    st.session_state["formulario_preenchido_nao_associado"] = False
-
-# Inicializar os campos de texto no session state se ainda não existirem
-if "input_nome_completo_na" not in st.session_state:
-    st.session_state["input_nome_completo_na"] = ""
-if "input_email_na" not in st.session_state:
-    st.session_state["input_email_na"] = ""
-if "input_telefone_na" not in st.session_state:
-    st.session_state["input_telefone_na"] = ""
-
-if "input_nome_completo_associado" not in st.session_state:
-    st.session_state["input_nome_completo_associado"] = ""
-if "input_email_associado" not in st.session_state:
-    st.session_state["input_email_associado"] = ""
-if "input_telefone_associado" not in st.session_state:
-    st.session_state["input_telefone_associado"] = ""
-
 # Exibe o layout dos botões centrados
 st.image("logo.png", width=200)
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
@@ -193,12 +191,11 @@ if st.session_state["opcao_escolhida"] == "associado":
 
     col1, col2, col3 = st.columns(3)
 
-    # Certifique-se de que essa linha e as seguintes estão devidamente alinhadas com 4 espaços
     if col1.button("ADIMPLENTE", key="btn_adimplente"):
         st.session_state["botao_clicado"] = "adimplente"
     if col2.button("EM NEGOCIAÇÃO", key="btn_em_negociacao"):
         st.session_state["botao_clicado"] = "em_negociacao"
-    if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
+        if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
         st.session_state["botao_clicado"] = "mensalidade_atrasada"
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
