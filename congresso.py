@@ -260,6 +260,8 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
                 st.session_state["formulario_preenchido"] = True
+                # Enviar e-mail de confirmação
+                enviar_email_confirmacao(nome_completo, email)
         else:
             st.error("Por favor, preencha todos os campos.")
 
@@ -339,6 +341,8 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
             else:
                 salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", st.session_state.get("instituicao"))
                 st.session_state["formulario_preenchido_nao_associado"] = True
+                # Enviar e-mail de confirmação
+                enviar_email_confirmacao(nome_completo_na, email_na)
         else:
             st.error("Por favor, preencha todos os campos.")
 
