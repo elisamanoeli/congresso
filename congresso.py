@@ -53,7 +53,7 @@ def enviar_email_confirmacao(nome, email):
     smtp_server = "mail.asiip.com.br"
     smtp_port = 465
     smtp_user = "contato@asiip.com.br"
-    smtp_password = "senhaparaocongresso"  # Substitua pela sua senha
+    smtp_password = "Co2326@Asi"  # Substitua pela sua senha
 
     # Configurando a mensagem
     msg = MIMEMultipart()
