@@ -107,6 +107,8 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
+# O código para a interface do usuário continua...
+
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
@@ -196,33 +198,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Função JavaScript para rolar a página para o final
-st.markdown(
-    """
-    <script>
-    function scrollToBottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-    </script>
-    """,
-    unsafe_allow_html=True
-)
-
 # Exibe o layout dos botões centrados
-# CSS personalizado para garantir que o tamanho da imagem seja controlado
-st.markdown(
-    """
-    <style>
-    .stImage img {
-        width: 200px !important;
-        height: auto !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-# Exibe o logo com largura fixa de 200px
-st.image("logo.png", use_column_width=False, width=200)
+st.image("logo.png", width=200)
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
 
 st.write("Escolha uma opção para prosseguir com a inscrição:")
@@ -237,7 +214,6 @@ with col1:
         st.session_state["opcao_escolhida"] = "associado"
         st.session_state["botao_clicado"] = None
         st.session_state["formulario_preenchido"] = False
-        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
 
 with col2:
     if st.button("NÃO ASSOCIADO", key="btn_nao_associado"):
@@ -245,7 +221,6 @@ with col2:
         st.session_state["botao_clicado"] = None
         st.session_state["formulario_preenchido_nao_associado"] = False
         st.session_state["instituicao_selecionada"] = False
-        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -257,15 +232,10 @@ if st.session_state.get("opcao_escolhida") == "associado":
 
     if col1.button("ADIMPLENTE", key="btn_adimplente"):
         st.session_state["botao_clicado"] = "adimplente"
-        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
-
     if col2.button("EM NEGOCIAÇÃO", key="btn_em_negociacao"):
         st.session_state["botao_clicado"] = "em_negociacao"
-        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
-
     if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
         st.session_state["botao_clicado"] = "mensalidade_atrasada"
-        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
     col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento. Se ainda não negociou as mensalidades atrasadas, envie um email para contato@asiip.com.br")
@@ -278,6 +248,9 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
     nome_completo = st.text_input("Nome Completo", key="input_nome_completo_associado")
     email = st.text_input("Email", key="input_email_associado")
     telefone = st.text_input("Telefone", key="input_telefone_associado")
+
+    # Força a rolagem para o final após exibir o formulário
+    st.experimental_rerun()
 
     if st.button("ENVIAR", key="btn_enviar_associado"):
         if nome_completo and email and telefone:
@@ -370,7 +343,7 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
     telefone_na = st.text_input("Telefone", key="input_telefone_na")
 
     if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
-        if nome_completo_na and email_na and telefone_na:
+        if nome_completo_na and email_na e telefone_na:
             if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
