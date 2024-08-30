@@ -192,7 +192,12 @@ st.markdown(
 )
 
 # Exibe o layout dos botões centrados
-st.image("logo.png", use_column_width=True)
+st.markdown(
+    """
+    <img src="logo.png" style="width:100%; max-width:300px;">
+    """,
+    unsafe_allow_html=True
+)
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
 
 st.write("Escolha uma opção para prosseguir com a inscrição:")
