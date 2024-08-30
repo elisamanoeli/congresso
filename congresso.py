@@ -115,7 +115,7 @@ st.markdown(
     <style>
     /* Remove the top header */
     header {visibility: hidden;}
-    
+
     /* Remove the padding of the main block */
     .block-container {
         padding-top: 0rem;
@@ -140,6 +140,13 @@ st.markdown(
     .stApp {
         background-color: #f0f2f6;
     }
+
+    /* Restringe o tamanho das imagens no aplicativo */
+    .stImage img {
+        width: 200px;
+        height: auto;
+    }
+
     .block-container {
         background-color: white;
         padding: 20px;
@@ -190,9 +197,33 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
+st.markdown(
+    """
+    <style>
+    /* Remova temporariamente este trecho se estiver afetando a imagem */
+    /* img {
+        width: 100%;
+        height: auto;
+    } */
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 # Exibe o layout dos botões centrados
-st.image("logo.png", width=200)
+# CSS personalizado para garantir que o tamanho da imagem seja controlado
+st.markdown(
+    """
+    <style>
+    .stImage img {
+        width: 200px !important;
+        height: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+# Exibe o logo com largura fixa de 200px
+st.image("logo.png", use_column_width=False, width=200)
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
 
 st.write("Escolha uma opção para prosseguir com a inscrição:")
