@@ -197,15 +197,19 @@ st.markdown(
     <style>
         /* Estilos gerais para o logo */
         img.logo {
-            width: 200px; /* Tamanho padrão para computadores */
+            width: 150px; /* Tamanho padrão para computadores */
+            max-width: 100%; /* Garante que o logo não ultrapasse o tamanho da tela */
+            height: auto;
             filter: brightness(1.2); /* Brilho padrão */
         }
 
         /* Estilos específicos para telas menores, como celulares */
         @media only screen and (max-width: 768px) {
             img.logo {
-                width: 300px; /* Tamanho maior para celulares */
-                filter: brightness(1.5); /* Aumenta o brilho no celular */
+                width: 200px; /* Tamanho ajustado para celulares */
+                max-width: 100%; /* Garante que o logo não ultrapasse o tamanho da tela */
+                height: auto;
+                filter: brightness(1.4); /* Aumenta o brilho no celular */
             }
         }
     </style>
@@ -213,7 +217,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.image("logo.png", use_column_width=False, output_format="PNG")
+st.image("logo.png", use_column_width=False, output_format="PNG", class_="logo")
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
 
 st.write("Escolha uma opção para prosseguir com a inscrição:")
