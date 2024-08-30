@@ -343,7 +343,7 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
     telefone_na = st.text_input("Telefone", key="input_telefone_na")
 
     if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
-        if nome_completo_na and email_na e telefone_na:
+        if nome_completo_na and email_na and telefone_na:
             if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
