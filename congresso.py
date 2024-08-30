@@ -220,7 +220,7 @@ st.markdown(
 )
 
 # Exibindo o logo
-st.image("logo.png", use_column_width=True, output_format="PNG", caption="Logo Congresso ASIIP")
+st.image("logo.png", use_column_width=True, output_format="PNG")
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
 
 st.write("Escolha uma opção para prosseguir com a inscrição:")
