@@ -103,8 +103,8 @@ if "gcp_service_account" in st.secrets:
     worksheet = sheet.get_worksheet(0)
 
     # Função para enviar dados para o Google Sheets
-    def salvar_inscricao_google_sheets(nome, email, telefone, categoria, instituicao):
-        worksheet.append_row([nome, email, telefone, categoria, instituicao, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
+    def salvar_inscricao_google_sheets(nome, email, telefone, categoria, instituicao, valor, status):
+        worksheet.append_row([nome, email, telefone, categoria, instituicao, valor, status, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
@@ -270,11 +270,17 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
     email = st.text_input("Email", key="input_email_associado")
     telefone = st.text_input("Telefone", key="input_telefone_associado")
 
+    # Seleção de valor a pagar
+    valor = st.radio(
+        "Selecione o valor a pagar:",
+        ("R$ 75,00", "R$ 150,00")
+    )
+
     # Injetando o JavaScript para rolar a página automaticamente após carregar o formulário
     components.html(scroll_script)
 
     if st.button("ENVIAR", key="btn_enviar_associado"):
-        if nome_completo and email and telefone:
+        if nome_completo, email, telefone, valor:
             status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
 
             if not consultar_status_associado(nome_completo, status_selecionado):
@@ -289,7 +295,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
             elif not telefone_valido(telefone):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
+                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, valor, "Aguardando Pagamento")
                 st.session_state["formulario_preenchido"] = True
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo, email)
@@ -307,41 +313,24 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                             <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                             <p>Churrasco de Confraternização</p>
                             <p>30 DE NOVEMBRO 13:30</p>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-            elif st.session_state["botao_clicado"] == "em_negociacao":
-                st.markdown("""
-                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                        <div style="text-align:center; color:#0B0C45;">
-                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
-                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                            <p>30 DE NOVEMBRO 7:30</p>
-                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                            <p>Churrasco de Confraternização</p>
-                            <p>30 DE NOVEMBRO 13:30</p>
-                            <p>Local do churrasco a definir, Curitiba/PR</p>
                             <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                            <p><strong>VALOR: R$ 00,00</strong></p>
+                            <p><strong>VALOR: {valor}</strong></p>
+                            <p>Após o pagamento, por favor, envie o comprovante abaixo.</p>
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-            elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-                st.markdown("""
-                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                        <div style="text-align:center; color:#0B0C45;">
-                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                            <p>30 DE NOVEMBRO 7:30</p>
-                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                            <p>Churrasco de Confraternização</p>
-                            <p>30 DE NOVEMBRO 13:30</p>
-                            <p>Local do churrasco a definir, Curitiba/PR</p>
-                            <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                            <p><strong>VALOR: R$ 00,00</strong></p>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
+                
+                # Botão para enviar comprovante de pagamento
+                comprovante = st.file_uploader("Envie o comprovante de pagamento", type=["pdf", "png", "jpg", "jpeg"])
+                if comprovante is not None:
+                    # Nome do arquivo para salvar
+                    file_name = f"comprovantes/{nome_completo.replace(' ', '_')}_{valor.replace('R$ ', '')}.pdf"
+                    # Salvar o arquivo
+                    with open(file_name, "wb") as f:
+                        f.write(comprovante.getbuffer())
+                    st.success("Comprovante enviado com sucesso!")
+                    # Atualizar status na planilha
+                    worksheet.update_acell(f"G{linha_associado}", "Pago")
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
@@ -363,14 +352,20 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
     email_na = st.text_input("Email (NÃO Associado)", key="input_email_na")
     telefone_na = st.text_input("Telefone", key="input_telefone_na")
 
+    # Seleção de valor a pagar
+    valor_na = st.radio(
+        "Selecione o valor a pagar:",
+        ("R$ 75,00", "R$ 150,00")
+    )
+
     if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
-        if nome_completo_na and email_na and telefone_na:
+        if nome_completo_na, email_na, telefone_na, valor_na:
             if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone_na):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
-                salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", st.session_state.get("instituicao"))
+                salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", instituicao, valor_na, "Aguardando Pagamento")
                 st.session_state["formulario_preenchido_nao_associado"] = True
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo_na, email_na)
@@ -387,6 +382,21 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
                     <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
                     <p>Churrasco de Confraternização</p>
                     <p>30 DE NOVEMBRO 13:30</p>
+                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                    <p><strong>VALOR: {valor_na}</strong></p>
+                    <p>Após o pagamento, por favor, envie o comprovante abaixo.</p>
                 </div>
             </div>
         """, unsafe_allow_html=True)
+        
+        # Botão para enviar comprovante de pagamento
+        comprovante_na = st.file_uploader("Envie o comprovante de pagamento", type=["pdf", "png", "jpg", "jpeg"])
+        if comprovante_na is not None:
+            # Nome do arquivo para salvar
+            file_name = f"comprovantes/{nome_completo_na.replace(' ', '_')}_{valor_na.replace('R$ ', '')}.pdf"
+            # Salvar o arquivo
+            with open(file_name, "wb") as f:
+                f.write(comprovante_na.getbuffer())
+            st.success("Comprovante enviado com sucesso!")
+            # Atualizar status na planilha
+            worksheet.update_acell(f"G{linha_associado_na}", "Pago")
