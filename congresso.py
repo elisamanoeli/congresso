@@ -8,6 +8,7 @@ import gspread
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import streamlit.components.v1 as components
 
 # Verifica se as credenciais do GCP estão no st.secrets
 if "gcp_service_account" in st.secrets:
@@ -107,103 +108,285 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
-# Definir a página principal
-pagina = st.session_state.get("pagina", "inicio")
+# Adicionando JavaScript para rolar a página
+scroll_script = """
+<script>
+    window.scrollTo(0,document.body.scrollHeight);
+</script>
+"""
 
-# Página inicial com as opções de botão
-if pagina == "inicio":
-    st.image("logo.png", use_column_width=False, width=200)
-    st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
-    st.write("Escolha uma opção para prosseguir com a inscrição:")
+# O código para a interface do usuário continua...
+
+# CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
+st.markdown(
+    """
+    <style>
+    /* Remove the top header */
+    header {visibility: hidden;}
+
+    /* Remove the padding of the main block */
+    .block-container {
+        padding-top: 0rem;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .block-container {
+            background-color: #0e1117;
+            color: white;
+        }
+        .stButton>button {
+            background-color: #4b5563;
+            color: white;
+        }
+        .stButton>button:hover {
+            background-color: #6b7280;
+        }
+    }
+
+    /* Ensures compatibility with Edge */
+    .stApp {
+        background-color: #f0f2f6;
+    }
+
+    /* Restringe o tamanho das imagens no aplicativo */
+    .stImage img {
+        width: 200px;
+        height: auto;
+    }
+
+    .block-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        -ms-flex-direction: column; /* Edge support */
+        -webkit-flex-direction: column; /* Safari support */
+    }
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+        -ms-flex-wrap: wrap; /* Edge support */
+    }
+    .stButton>button {
+        background-color: #0B0C45;
+        color: white;
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: 2px solid #0B0C45;
+        -ms-touch-action: manipulation; /* Edge support */
+    }
+    .stButton>button:hover {
+        background-color: #28a745;
+        color: white;
+    }
+
+    /* Estilo para os campos de texto */
+    input[type="text"], input[type="email"], input[type="tel"] {
+        border: 2px solid #0B0C45;  /* mesma cor azul dos botões */
+        border-radius: 10px;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Foco nos campos de texto */
+    input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus {
+        border-color: #28a745;  /* cor verde ao focar */
+        outline: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Exibe o layout dos botões centrados
+# CSS personalizado para garantir que o tamanho da imagem seja controlado
+st.markdown(
+    """
+    <style>
+    .stImage img {
+        width: 200px !important;
+        height: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+# Exibe o logo com largura fixa de 200px
+st.image("logo.png", use_column_width=False, width=200)
+st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
+
+st.write("Escolha uma opção para prosseguir com a inscrição:")
+
+# Criando um contêiner para centralizar os botões
+st.markdown("<div class='button-container'>", unsafe_allow_html=True)
+col1, col2 = st.columns([1, 1])
+
+# Botões centralizados
+with col1:
+    if st.button("ASSOCIADO", key="btn_associado"):
+        st.session_state["opcao_escolhida"] = "associado"
+        st.session_state["botao_clicado"] = None
+        st.session_state["formulario_preenchido"] = False
+
+with col2:
+    if st.button("NÃO ASSOCIADO", key="btn_nao_associado"):
+        st.session_state["opcao_escolhida"] = "nao_associado"
+        st.session_state["botao_clicado"] = None
+        st.session_state["formulario_preenchido_nao_associado"] = False
+        st.session_state["instituicao_selecionada"] = False
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Exibe o formulário se ASSOCIADO foi clicado
+if st.session_state.get("opcao_escolhida") == "associado":
+    st.subheader("Selecione a Situação - Associado")
 
     col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("ADIMPLENTE"):
-            st.session_state["pagina"] = "form_adimplente"
-            st.experimental_rerun()
-    with col2:
-        if st.button("EM NEGOCIAÇÃO"):
-            st.session_state["pagina"] = "form_negociacao"
-            st.experimental_rerun()
-    with col3:
-        if st.button("MENSALIDADE ATRASADA"):
-            st.session_state["pagina"] = "form_atrasada"
-            st.experimental_rerun()
 
-# Página de formulário para ADIMPLENTE
-if pagina == "form_adimplente":
-    st.subheader("Formulário de Inscrição - ADIMPLENTE")
-    nome_completo = st.text_input("Nome Completo", key="input_nome_completo_adimplente")
-    email = st.text_input("Email", key="input_email_adimplente")
-    telefone = st.text_input("Telefone", key="input_telefone_adimplente")
+    if col1.button("ADIMPLENTE", key="btn_adimplente"):
+        st.session_state["botao_clicado"] = "adimplente"
+    if col2.button("EM NEGOCIAÇÃO", key="btn_em_negociacao"):
+        st.session_state["botao_clicado"] = "em_negociacao"
+    if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
+        st.session_state["botao_clicado"] = "mensalidade_atrasada"
 
-    if st.button("ENVIAR", key="btn_enviar_adimplente"):
+    col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
+    col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento. Se ainda não negociou as mensalidades atrasadas, envie um email para contato@asiip.com.br")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (envie um email para contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
+
+# Exibe o formulário de inscrição para ASSOCIADO
+if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhida") == "associado":
+    st.subheader("Preencha o Formulário de Inscrição")
+    
+    nome_completo = st.text_input("Nome Completo", key="input_nome_completo_associado")
+    email = st.text_input("Email", key="input_email_associado")
+    telefone = st.text_input("Telefone", key="input_telefone_associado")
+
+    # Injetando o JavaScript para rolar a página automaticamente após carregar o formulário
+    components.html(scroll_script)
+
+    if st.button("ENVIAR", key="btn_enviar_associado"):
         if nome_completo and email and telefone:
-            status_selecionado = "adimplente"
+            status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
+
             if not consultar_status_associado(nome_completo, status_selecionado):
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+                if st.session_state["botao_clicado"] == "adimplente":
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento da mensalidade neste mês, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição.")
+                elif st.session_state["botao_clicado"] == "em_negociacao":
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento das mensalidades no trâmite em negociação, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição, com 50% de desconto.")
+                elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
+                st.session_state["formulario_preenchido"] = True
+                # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo, email)
-                st.success("Inscrição realizada com sucesso!")
-                st.balloons()
+        else:
+            st.error("Por favor, preencha todos os campos.")
 
-    if st.button("VOLTAR"):
-        st.session_state["pagina"] = "inicio"
-        st.experimental_rerun()
+        if st.session_state["formulario_preenchido"]:
+            if st.session_state["botao_clicado"] == "adimplente":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+            elif st.session_state["botao_clicado"] == "em_negociacao":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                            <p>Local do churrasco a definir, Curitiba/PR</p>
+                            <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                            <p><strong>VALOR: R$ 00,00</strong></p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+            elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                            <p>Local do churrasco a definir, Curitiba/PR</p>
+                            <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                            <p><strong>VALOR: R$ 00,00</strong></p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-# Página de formulário para EM NEGOCIAÇÃO
-if pagina == "form_negociacao":
-    st.subheader("Formulário de Inscrição - EM NEGOCIAÇÃO")
-    nome_completo = st.text_input("Nome Completo", key="input_nome_completo_negociacao")
-    email = st.text_input("Email", key="input_email_negociacao")
-    telefone = st.text_input("Telefone", key="input_telefone_negociacao")
+# Exibe o formulário de inscrição para NÃO ASSOCIADO
+if st.session_state.get("opcao_escolhida") == "nao_associado":
+    st.subheader("Selecione sua instituição:")
+    
+    instituicao = st.radio(
+        "Escolha uma opção:",
+        ("Polícia Federal", "Polícia Civil", "Polícia Militar", "Guarda Municipal"),
+        key="instituicao"
+    )
 
-    if st.button("ENVIAR", key="btn_enviar_negociacao"):
-        if nome_completo and email and telefone:
-            status_selecionado = "em negociação"
-            if not consultar_status_associado(nome_completo, status_selecionado):
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
-            elif not email_valido(email):
+    if instituicao:
+        st.session_state["instituicao_selecionada"] = True
+
+if st.session_state.get("instituicao_selecionada") and st.session_state.get("opcao_escolhida") == "nao_associado":
+    st.subheader("Preencha o Formulário de Inscrição - NÃO Associado")
+        
+    nome_completo_na = st.text_input("Nome Completo (NÃO Associado)", key="input_nome_completo_na")
+    email_na = st.text_input("Email (NÃO Associado)", key="input_email_na")
+    telefone_na = st.text_input("Telefone", key="input_telefone_na")
+
+    if st.button("ENVIAR (NÃO ASSOCIADO)", key="btn_enviar_nao_associado"):
+        if nome_completo_na and email_na and telefone_na:
+            if not email_valido(email_na):
                 st.error("Por favor, insira um email válido.")
-            elif not telefone_valido(telefone):
+            elif not telefone_valido(telefone_na):
                 st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
             else:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
-                enviar_email_confirmacao(nome_completo, email)
-                st.success("Inscrição realizada com sucesso!")
-                st.balloons()
+                salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", st.session_state.get("instituicao"))
+                st.session_state["formulario_preenchido_nao_associado"] = True
+                # Enviar e-mail de confirmação
+                enviar_email_confirmacao(nome_completo_na, email_na)
+        else:
+            st.error("Por favor, preencha todos os campos.")
 
-    if st.button("VOLTAR"):
-        st.session_state["pagina"] = "inicio"
-        st.experimental_rerun()
-
-# Página de formulário para MENSALIDADE ATRASADA
-if pagina == "form_atrasada":
-    st.subheader("Formulário de Inscrição - MENSALIDADE ATRASADA")
-    nome_completo = st.text_input("Nome Completo", key="input_nome_completo_atrasada")
-    email = st.text_input("Email", key="input_email_atrasada")
-    telefone = st.text_input("Telefone", key="input_telefone_atrasada")
-
-    if st.button("ENVIAR", key="btn_enviar_atrasada"):
-        if nome_completo and email and telefone:
-            status_selecionado = "mensalidade atrasada"
-            if not consultar_status_associado(nome_completo, status_selecionado):
-                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
-            elif not email_valido(email):
-                st.error("Por favor, insira um email válido.")
-            elif not telefone_valido(telefone):
-                st.error("Por favor, insira um telefone válido (11 dígitos, apenas números, com DDD).")
-            else:
-                salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
-                enviar_email_confirmacao(nome_completo, email)
-                st.success("Inscrição realizada com sucesso!")
-                st.balloons()
-
-    if st.button("VOLTAR"):
-        st.session_state["pagina"] = "inicio"
-        st.experimental_rerun()
+    if st.session_state.get("formulario_preenchido_nao_associado"):
+        st.markdown("""
+            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                <div style="text-align:center; color:#0B0C45;">
+                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                    <p>30 DE NOVEMBRO 7:30</p>
+                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                    <p>Churrasco de Confraternização</p>
+                    <p>30 DE NOVEMBRO 13:30</p>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
