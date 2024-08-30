@@ -107,8 +107,6 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
-# O código para a interface do usuário continua...
-
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
@@ -197,18 +195,19 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# Função JavaScript para rolar a página para o final
 st.markdown(
     """
-    <style>
-    /* Remova temporariamente este trecho se estiver afetando a imagem */
-    /* img {
-        width: 100%;
-        height: auto;
-    } */
-    </style>
+    <script>
+    function scrollToBottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+    </script>
     """,
     unsafe_allow_html=True
 )
+
 # Exibe o layout dos botões centrados
 # CSS personalizado para garantir que o tamanho da imagem seja controlado
 st.markdown(
@@ -238,6 +237,7 @@ with col1:
         st.session_state["opcao_escolhida"] = "associado"
         st.session_state["botao_clicado"] = None
         st.session_state["formulario_preenchido"] = False
+        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
 
 with col2:
     if st.button("NÃO ASSOCIADO", key="btn_nao_associado"):
@@ -245,6 +245,7 @@ with col2:
         st.session_state["botao_clicado"] = None
         st.session_state["formulario_preenchido_nao_associado"] = False
         st.session_state["instituicao_selecionada"] = False
+        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -256,10 +257,15 @@ if st.session_state.get("opcao_escolhida") == "associado":
 
     if col1.button("ADIMPLENTE", key="btn_adimplente"):
         st.session_state["botao_clicado"] = "adimplente"
+        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
+
     if col2.button("EM NEGOCIAÇÃO", key="btn_em_negociacao"):
         st.session_state["botao_clicado"] = "em_negociacao"
+        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
+
     if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
         st.session_state["botao_clicado"] = "mensalidade_atrasada"
+        st.markdown("<script>scrollToBottom();</script>", unsafe_allow_html=True)  # Rola a página
 
     col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
     col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento. Se ainda não negociou as mensalidades atrasadas, envie um email para contato@asiip.com.br")
