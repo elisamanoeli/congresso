@@ -192,35 +192,7 @@ st.markdown(
 )
 
 # Exibe o layout dos botões centrados
-st.markdown(
-    """
-    <style>
-        /* Estilos gerais para o logo */
-        .custom-logo {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            width: 50%; /* Tamanho padrão para computadores */
-            max-width: 300px; /* Limita o tamanho máximo */
-            height: auto;
-            filter: brightness(1.2); /* Brilho padrão */
-        }
-
-        /* Estilos específicos para telas menores, como celulares */
-        @media only screen and (max-width: 768px) {
-            .custom-logo {
-                width: 70%; /* Ajusta o tamanho para celulares */
-                max-width: 200px; /* Limita o tamanho máximo em celulares */
-                filter: brightness(1.4); /* Aumenta o brilho no celular */
-            }
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Exibindo o logo
-st.image("logo.png", use_column_width=True, output_format="PNG")
+st.image("logo.png", width=200)
 st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
 
 st.write("Escolha uma opção para prosseguir com a inscrição:")
