@@ -8,6 +8,7 @@ import gspread
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import streamlit.components.v1 as components
 
 # Verifica se as credenciais do GCP estão no st.secrets
 if "gcp_service_account" in st.secrets:
@@ -107,6 +108,13 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
+# Adicionando JavaScript para rolar a página
+scroll_script = """
+<script>
+    window.scrollTo(0,document.body.scrollHeight);
+</script>
+"""
+
 # O código para a interface do usuário continua...
 
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
@@ -197,18 +205,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown(
-    """
-    <style>
-    /* Remova temporariamente este trecho se estiver afetando a imagem */
-    /* img {
-        width: 100%;
-        height: auto;
-    } */
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
 # Exibe o layout dos botões centrados
 # CSS personalizado para garantir que o tamanho da imagem seja controlado
 st.markdown(
@@ -272,6 +269,9 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
     nome_completo = st.text_input("Nome Completo", key="input_nome_completo_associado")
     email = st.text_input("Email", key="input_email_associado")
     telefone = st.text_input("Telefone", key="input_telefone_associado")
+
+    # Injetando o JavaScript para rolar a página automaticamente após carregar o formulário
+    components.html(scroll_script)
 
     if st.button("ENVIAR", key="btn_enviar_associado"):
         if nome_completo and email and telefone:
