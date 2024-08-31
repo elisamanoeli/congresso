@@ -107,12 +107,6 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
-# Inicializando os estados do formulário
-if "formulario_preenchido" not in st.session_state:
-    st.session_state["formulario_preenchido"] = False
-if "formulario_preenchido_nao_associado" not in st.session_state:
-    st.session_state["formulario_preenchido_nao_associado"] = False
-
 # O código para a interface do usuário continua...
 
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
