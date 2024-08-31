@@ -296,6 +296,12 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
         else:
             st.error("Por favor, preencha todos os campos.")
 
+# Inicializa as chaves no session_state se não existirem
+if "formulario_preenchido" not in st.session_state:
+    st.session_state["formulario_preenchido"] = False
+if "formulario_preenchido_nao_associado" not in st.session_state:
+    st.session_state["formulario_preenchido_nao_associado"] = False
+
 # Exibe a mensagem de sucesso e o botão "ENVIAR COMPROVANTE"
 def exibir_mensagem_sucesso(tipo_associado):
     if tipo_associado == "adimplente":
