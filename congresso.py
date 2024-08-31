@@ -266,8 +266,27 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo, email)
 
-                if st.session_state["formulario_preenchido"]:
-                    st.success("Inscrição efetuada com sucesso! Verifique seu email para mais detalhes.")
+                # Exibir a mensagem de sucesso após a inscrição
+                st.success(f"""
+                    Olá {nome_completo},
+
+                    Sua inscrição no I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana foi efetuada com sucesso!
+
+                    Detalhes do evento:
+                    Data: 30 de Novembro
+                    Horário: 7:30
+                    Local: Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR
+
+                    Churrasco de Confraternização:
+                    Data: 30 de Novembro
+                    Horário: 13:30
+                    Local: A definir, Curitiba/PR
+
+                    Aguardamos sua presença!
+
+                    Atenciosamente,
+                    ASIIP
+                """)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
@@ -301,5 +320,24 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo_na, email_na)
 
-                if st.session_state["formulario_preenchido_nao_associado"]:
-                    st.success("Inscrição efetuada com sucesso! Verifique seu email para mais detalhes.")
+                # Exibir a mensagem de sucesso após a inscrição
+                st.success(f"""
+                    Olá {nome_completo_na},
+
+                    Sua inscrição no I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana foi efetuada com sucesso!
+
+                    Detalhes do evento:
+                    Data: 30 de Novembro
+                    Horário: 7:30
+                    Local: Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR
+
+                    Churrasco de Confraternização:
+                    Data: 30 de Novembro
+                    Horário: 13:30
+                    Local: A definir, Curitiba/PR
+
+                    Aguardamos sua presença!
+
+                    Atenciosamente,
+                    ASIIP
+                """)
