@@ -107,13 +107,128 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
-# Inicializa as chaves no session_state se não existirem
-if "formulario_preenchido" not in st.session_state:
-    st.session_state["formulario_preenchido"] = False
-if "formulario_preenchido_nao_associado" not in st.session_state:
-    st.session_state["formulario_preenchido_nao_associado"] = False
+# O código para a interface do usuário continua...
 
+# CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
+st.markdown(
+    """
+    <style>
+    /* Remove the top header */
+    header {visibility: hidden;}
+
+    /* Remove the padding of the main block */
+    .block-container {
+        padding-top: 0rem;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .block-container {
+            background-color: #0e1117;
+            color: white;
+        }
+        .stButton>button {
+            background-color: #4b5563;
+            color: white;
+        }
+        .stButton>button:hover {
+            background-color: #6b7280;
+        }
+    }
+
+    /* Ensures compatibility with Edge */
+    .stApp {
+        background-color: #f0f2f6;
+    }
+
+    /* Restringe o tamanho das imagens no aplicativo */
+    .stImage img {
+        width: 200px;
+        height: auto;
+    }
+
+    .block-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        -ms-flex-direction: column; /* Edge support */
+        -webkit-flex-direction: column; /* Safari support */
+    }
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+        -ms-flex-wrap: wrap; /* Edge support */
+    }
+    .stButton>button {
+        background-color: #0B0C45;
+        color: white;
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: 2px solid #0B0C45;
+        -ms-touch-action: manipulation; /* Edge support */
+    }
+    .stButton>button:hover {
+        background-color: #28a745;
+        color: white;
+    }
+
+    /* Estilo para os campos de texto */
+    input[type="text"], input[type="email"], input[type="tel"] {
+        border: 2px solid #0B0C45;  /* mesma cor azul dos botões */
+        border-radius: 10px;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Foco nos campos de texto */
+    input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus {
+        border-color: #28a745;  /* cor verde ao focar */
+        outline: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown(
+    """
+    <style>
+    /* Remova temporariamente este trecho se estiver afetando a imagem */
+    /* img {
+        width: 100%;
+        height: auto;
+    } */
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 # Exibe o layout dos botões centrados
+# CSS personalizado para garantir que o tamanho da imagem seja controlado
+st.markdown(
+    """
+    <style>
+    .stImage img {
+        width: 200px !important;
+        height: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+# Exibe o logo com largura fixa de 200px
+st.image("logo.png", use_column_width=False, width=200)
+st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
+
+st.write("Escolha uma opção para prosseguir com a inscrição:")
+
+# Criando um contêiner para centralizar os botões
 st.markdown("<div class='button-container'>", unsafe_allow_html=True)
 col1, col2 = st.columns([1, 1])
 
@@ -146,6 +261,10 @@ if st.session_state.get("opcao_escolhida") == "associado":
     if col3.button("MENSALIDADE ATRASADA", key="btn_mensalidade_atrasada"):
         st.session_state["botao_clicado"] = "mensalidade_atrasada"
 
+    col1.caption("Gratos pela sua colaboração, perito papiloscopista. Nesse evento, você será VIP, sem nenhum custo.")
+    col2.caption("Gratos pela negociação. Você terá 50% de desconto no valor do evento. Se ainda não negociou as mensalidades atrasadas, envie um email para contato@asiip.com.br")
+    col3.caption("Ficaremos gratos caso queira negociar as parcelas atrasadas e aí receberá 50% de desconto no valor do evento (envie um email para contato@asiip.com.br), caso ainda não esteja pronto para a negociação clique no botão MENSALIDADE ATRASADA.")
+
 # Exibe o formulário de inscrição para ASSOCIADO
 if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhida") == "associado":
     st.subheader("Preencha o Formulário de Inscrição")
@@ -172,61 +291,57 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
                 st.session_state["formulario_preenchido"] = True
+                # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo, email)
+        else:
+            st.error("Por favor, preencha todos os campos.")
 
-                # Exibir mensagem de sucesso imediatamente após a inscrição
-                exibir_mensagem_sucesso(st.session_state["botao_clicado"])
-
-# Função para exibir a mensagem de sucesso e o botão "ENVIAR COMPROVANTE"
-def exibir_mensagem_sucesso(tipo_associado):
-    if tipo_associado == "adimplente":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    elif tipo_associado == "em_negociacao":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                    <p>Local do churrasco a definir, Curitiba/PR</p>
-                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                    <p><strong>VALOR: R$ 00,00</strong></p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    elif tipo_associado == "mensalidade_atrasada":
-        st.markdown("""
-            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
-                <div style="text-align:center; color:#0B0C45;">
-                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
-                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
-                    <p>30 DE NOVEMBRO 7:30</p>
-                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
-                    <p>Churrasco de Confraternização</p>
-                    <p>30 DE NOVEMBRO 13:30</p>
-                    <p>Local do churrasco a definir, Curitiba/PR</p>
-                    <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
-                    <p><strong>VALOR: R$ 00,00</strong></p>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    if st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante"):
-        st.info("Funcionalidade de envio de comprovante em desenvolvimento.")
+        if st.session_state["formulario_preenchido"]:
+            if st.session_state["botao_clicado"] == "adimplente":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>INSCRIÇÃO EFETUADA COM SUCESSO</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+            elif st.session_state["botao_clicado"] == "em_negociacao":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DE 50%</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                            <p>Local do churrasco a definir, Curitiba/PR</p>
+                            <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                            <p><strong>VALOR: R$ 00,00</strong></p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+            elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
+                st.markdown("""
+                    <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                        <div style="text-align:center; color:#0B0C45;">
+                            <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                            <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                            <p>30 DE NOVEMBRO 7:30</p>
+                            <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                            <p>Churrasco de Confraternização</p>
+                            <p>30 DE NOVEMBRO 13:30</p>
+                            <p>Local do churrasco a definir, Curitiba/PR</p>
+                            <p><strong>PIX CNPJ: 39.486.619/0001-93</strong></p>
+                            <p><strong>VALOR: R$ 00,00</strong></p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
@@ -257,8 +372,21 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
             else:
                 salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", st.session_state.get("instituicao"))
                 st.session_state["formulario_preenchido_nao_associado"] = True
+                # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo_na, email_na)
-                exibir_mensagem_sucesso("nao_associado")
         else:
             st.error("Por favor, preencha todos os campos.")
 
+    if st.session_state.get("formulario_preenchido_nao_associado"):
+        st.markdown("""
+            <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
+                <div style="text-align:center; color:#0B0C45;">
+                    <p>SUA INSCRIÇÃO SERÁ EFETIVADA APÓS O PAGAMENTO DO VALOR TOTAL</p>
+                    <p>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</p>
+                    <p>30 DE NOVEMBRO 7:30</p>
+                    <p>Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR</p>
+                    <p>Churrasco de Confraternização</p>
+                    <p>30 DE NOVEMBRO 13:30</p>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
