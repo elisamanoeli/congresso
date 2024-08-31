@@ -258,6 +258,10 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                     </div>
                 """, unsafe_allow_html=True)
 
+            # Exibe o botão "ENVIAR COMPROVANTE" após a mensagem de sucesso
+            if st.button("ENVIAR COMPROVANTE"):
+                st.write("Aqui você pode adicionar a lógica para enviar o comprovante.")
+
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
     st.subheader("Selecione sua instituição:")
@@ -303,3 +307,7 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
                 </div>
             </div>
         """, unsafe_allow_html=True)
+
+        # Exibe o botão "ENVIAR COMPROVANTE" após a mensagem de sucesso
+        if st.button("ENVIAR COMPROVANTE"):
+            st.write("Aqui você pode adicionar a lógica para enviar o comprovante.")
