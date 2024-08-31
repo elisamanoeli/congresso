@@ -306,6 +306,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
+                st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
             elif st.session_state["botao_clicado"] == "em_negociacao":
                 st.markdown("""
                     <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
@@ -322,6 +323,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
+                st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
             elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
                 st.markdown("""
                     <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
@@ -338,11 +340,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-
-            # Adiciona o botão "ENVIAR COMPROVANTE" abaixo da mensagem de sucesso
-            st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
-            st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
-            st.markdown("</div>", unsafe_allow_html=True)
+                st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
@@ -390,7 +388,4 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
             </div>
         """, unsafe_allow_html=True)
 
-        # Adiciona o botão "ENVIAR COMPROVANTE" abaixo da mensagem de sucesso
-        st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
         st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante_nao_associado")
-        st.markdown("</div>", unsafe_allow_html=True)
