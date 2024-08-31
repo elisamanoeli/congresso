@@ -5,9 +5,6 @@ import requests
 from io import BytesIO
 from google.oauth2 import service_account
 import gspread
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 # Verifica se as credenciais do GCP estão no st.secrets
 if "gcp_service_account" in st.secrets:
@@ -47,53 +44,6 @@ def telefone_valido(telefone):
     telefone = telefone.strip().replace(" ", "")  # Remover espaços em branco
     return telefone.isdigit() and len(telefone) == 11
 
-# Função para enviar e-mail de confirmação
-def enviar_email_confirmacao(nome, email):
-    # Configurações do servidor SMTP
-    smtp_server = "mail.asiip.com.br"
-    smtp_port = 465
-    smtp_user = "contato@asiip.com.br"
-    smtp_password = "Co2326@Asi"  # Substitua pela sua senha
-
-    # Configurando a mensagem
-    msg = MIMEMultipart()
-    msg['From'] = smtp_user
-    msg['To'] = email
-    msg['Subject'] = "Confirmação de Inscrição - I Congresso de Papiloscopia da ASIIP"
-
-    body = f"""
-    Olá {nome},
-
-    Sua inscrição no I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana foi efetuada com sucesso!
-
-    Detalhes do evento:
-    Data: 30 de Novembro
-    Horário: 7:30
-    Local: Rua Barão do Rio Branco, 370 - Centro, Curitiba/PR
-
-    Churrasco de Confraternização:
-    Data: 30 de Novembro
-    Horário: 13:30
-    Local: A definir, Curitiba/PR
-
-    Aguardamos sua presença!
-
-    Atenciosamente,
-    ASIIP
-    """
-
-    msg.attach(MIMEText(body, 'plain'))
-
-    # Enviando o e-mail
-    try:
-        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
-        server.login(smtp_user, smtp_password)
-        server.sendmail(smtp_user, email, msg.as_string())
-        server.quit()
-        st.success("E-mail de confirmação enviado com sucesso!")
-    except Exception as e:
-        st.error(f"Erro ao enviar o e-mail: {e}")
-
 # Verificação das credenciais e conexão com o Google Sheets
 if "gcp_service_account" in st.secrets:
     # Acessar o Google Sheets pelo ID da planilha
@@ -106,8 +56,6 @@ if "gcp_service_account" in st.secrets:
         worksheet.append_row([nome, email, telefone, categoria, instituicao, pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')])
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
-
-# O código para a interface do usuário continua...
 
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
@@ -260,8 +208,6 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
             else:
                 salvar_inscricao_google_sheets(nome_completo, email, telefone, status_selecionado, "ASSOCIADO")
                 st.session_state["formulario_preenchido"] = True
-                # Enviar e-mail de confirmação
-                enviar_email_confirmacao(nome_completo, email)
         else:
             st.error("Por favor, preencha todos os campos.")
 
@@ -341,8 +287,6 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
             else:
                 salvar_inscricao_google_sheets(nome_completo_na, email_na, telefone_na, "NÃO ASSOCIADO", st.session_state.get("instituicao"))
                 st.session_state["formulario_preenchido_nao_associado"] = True
-                # Enviar e-mail de confirmação
-                enviar_email_confirmacao(nome_completo_na, email_na)
         else:
             st.error("Por favor, preencha todos os campos.")
 
