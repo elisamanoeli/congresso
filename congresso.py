@@ -107,6 +107,8 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
+# O código para a interface do usuário continua...
+
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
@@ -291,6 +293,8 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                 st.session_state["formulario_preenchido"] = True
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo, email)
+        else:
+            st.error("Por favor, preencha todos os campos.")
 
         if st.session_state["formulario_preenchido"]:
             if st.session_state["botao_clicado"] == "adimplente":
@@ -306,7 +310,6 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-                st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
             elif st.session_state["botao_clicado"] == "em_negociacao":
                 st.markdown("""
                     <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
@@ -323,7 +326,6 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-                st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
             elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
                 st.markdown("""
                     <div class="success-box" style="background-color:#FFFFFF; border:2px solid #0B0C45; border-radius:10px; padding:20px; margin-top:20px;">
@@ -340,7 +342,6 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-                st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
 
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
@@ -373,6 +374,8 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
                 st.session_state["formulario_preenchido_nao_associado"] = True
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo_na, email_na)
+        else:
+            st.error("Por favor, preencha todos os campos.")
 
     if st.session_state.get("formulario_preenchido_nao_associado"):
         st.markdown("""
@@ -387,5 +390,3 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
                 </div>
             </div>
         """, unsafe_allow_html=True)
-
-        st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante_nao_associado")
