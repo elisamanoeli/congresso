@@ -107,6 +107,12 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
+# Inicializando os estados do formulário
+if "formulario_preenchido" not in st.session_state:
+    st.session_state["formulario_preenchido"] = False
+if "formulario_preenchido_nao_associado" not in st.session_state:
+    st.session_state["formulario_preenchido_nao_associado"] = False
+
 # O código para a interface do usuário continua...
 
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
@@ -197,38 +203,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown(
-    """
-    <style>
-    /* Remova temporariamente este trecho se estiver afetando a imagem */
-    /* img {
-        width: 100%;
-        height: auto;
-    } */
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
 # Exibe o layout dos botões centrados
-# CSS personalizado para garantir que o tamanho da imagem seja controlado
-st.markdown(
-    """
-    <style>
-    .stImage img {
-        width: 200px !important;
-        height: auto !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-# Exibe o logo com largura fixa de 200px
-st.image("logo.png", use_column_width=False, width=200)
-st.markdown("<h1 style='text-align: center;'>I Congresso de Papiloscopia da ASIIP - Comparação Facial Humana</h1>", unsafe_allow_html=True)
-
-st.write("Escolha uma opção para prosseguir com a inscrição:")
-
-# Criando um contêiner para centralizar os botões
 st.markdown("<div class='button-container'>", unsafe_allow_html=True)
 col1, col2 = st.columns([1, 1])
 
@@ -278,12 +254,7 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
             status_selecionado = st.session_state["botao_clicado"].replace("_", " ")
 
             if not consultar_status_associado(nome_completo, status_selecionado):
-                if st.session_state["botao_clicado"] == "adimplente":
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento da mensalidade neste mês, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição.")
-                elif st.session_state["botao_clicado"] == "em_negociacao":
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}. Caso tenha efetuado o pagamento das mensalidades no trâmite em negociação, por favor, envie os comprovantes para o email contato@asiip.com.br. Entraremos em contato para confirmar e efetivar sua inscrição, com 50% de desconto.")
-                elif st.session_state["botao_clicado"] == "mensalidade_atrasada":
-                    st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
+                st.error(f"O nome {nome_completo} não corresponde a um associado com status {status_selecionado}.")
             elif not email_valido(email):
                 st.error("Por favor, insira um email válido.")
             elif not telefone_valido(telefone):
