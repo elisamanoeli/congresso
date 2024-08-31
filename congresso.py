@@ -107,8 +107,6 @@ if "gcp_service_account" in st.secrets:
 else:
     st.error("Não foi possível carregar as credenciais do GCP. A integração com o Google Sheets não está disponível.")
 
-# O código para a interface do usuário continua...
-
 # CSS personalizado para ocultar a barra superior do Streamlit e remover o padding superior
 st.markdown(
     """
@@ -293,8 +291,6 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                 st.session_state["formulario_preenchido"] = True
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo, email)
-        else:
-            st.error("Por favor, preencha todos os campos.")
 
         if st.session_state["formulario_preenchido"]:
             if st.session_state["botao_clicado"] == "adimplente":
@@ -343,6 +339,11 @@ if st.session_state.get("botao_clicado") and st.session_state.get("opcao_escolhi
                     </div>
                 """, unsafe_allow_html=True)
 
+            # Adiciona o botão "ENVIAR COMPROVANTE" abaixo da mensagem de sucesso
+            st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
+            st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante")
+            st.markdown("</div>", unsafe_allow_html=True)
+
 # Exibe o formulário de inscrição para NÃO ASSOCIADO
 if st.session_state.get("opcao_escolhida") == "nao_associado":
     st.subheader("Selecione sua instituição:")
@@ -374,8 +375,6 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
                 st.session_state["formulario_preenchido_nao_associado"] = True
                 # Enviar e-mail de confirmação
                 enviar_email_confirmacao(nome_completo_na, email_na)
-        else:
-            st.error("Por favor, preencha todos os campos.")
 
     if st.session_state.get("formulario_preenchido_nao_associado"):
         st.markdown("""
@@ -390,3 +389,8 @@ if st.session_state.get("instituicao_selecionada") and st.session_state.get("opc
                 </div>
             </div>
         """, unsafe_allow_html=True)
+
+        # Adiciona o botão "ENVIAR COMPROVANTE" abaixo da mensagem de sucesso
+        st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
+        st.button("ENVIAR COMPROVANTE", key="btn_enviar_comprovante_nao_associado")
+        st.markdown("</div>", unsafe_allow_html=True)
